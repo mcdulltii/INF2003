@@ -1,0 +1,13 @@
+CREATE TABLE `users` (
+  `user_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(255) NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `forums` (
+  `forum_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `forum_name` VARCHAR(255) NOT NULL,
+  `forum_category` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`forum_id`),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
