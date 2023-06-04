@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  express:
-    container_name: express-app
-    build: ./frontend
+  app:
+    container_name: app-server
+    build: ./app
     restart: always
     ports:
       - 8000:8000
@@ -79,4 +79,3 @@ services:
 
 networks:
   app_network:
-
