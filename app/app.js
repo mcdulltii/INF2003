@@ -2,7 +2,32 @@ const express = require("express");
 const mariadb = require("mariadb");
 const MongoClient = require('mongodb').MongoClient;
 
+const createError = require("http-errors");
+const path = require("path");
+
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const morgan = require('morgan');
+
+// const pug = require('pug');
+
+// const indexRouter = require("./routes/index");
+
 const app = express();
+app.use(morgan('tiny'));
+app.use(cors());
+app.use(bodyParser.json());
+
+app.use(express.static(path.join(__dirname, './dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, './dist/index.html'));
+});
+
+
+// app.set("views", path.join(__dirname, "views"));
+// app.set("view engine", "pug");
+// app.locals.basedir = path.join(__dirname, "views");
 
 // Connect to mariadb
 const pool = mariadb.createPool({
@@ -28,6 +53,9 @@ module.exports={
 // Create a new MongoClient connection
 const uri = 'mongodb://user:password@mongodb:27017/mongo_db';
 const client = new MongoClient(uri);
+
+// gets routes to views
+// app.use("/", indexRouter);
 
 // Create a route to get all users from MySQL
 app.get("/users", async (req, res) => {
