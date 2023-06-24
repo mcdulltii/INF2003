@@ -40,5 +40,24 @@ db.createCollection("posts", {
          }
       }
    }
-})
-db.createCollection("comments");
+});
+
+db.createCollection("comments", {
+   validator: {
+      $jsonSchema: {
+         bsonType: "object",
+         required: [ "comment_message", "post_id" ],
+         properties: {
+           comment_message: {
+              bsonType: "string",
+              description: "must be a string and is required"
+           },
+           post_id: {
+              bsonType: "int",
+              description: "must be an integer and is required"
+           }
+         }
+      }
+   }
+});
+
