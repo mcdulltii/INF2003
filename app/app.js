@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 
 // Models
 require("./models/Post");
+require("./models/Comment");
 
 // ExpressJS App
 const app = express();
