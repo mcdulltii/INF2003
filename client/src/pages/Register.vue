@@ -3,15 +3,15 @@
       <!-- <div class="col-xl-4 col-lg-5 col-md-6">
       </div> -->
       <div class="col-xl-8 col-lg-7 col-md-6" style="margin: auto">
-        <login-details> </login-details>
+        <register> </register>
       </div>
     </div>
   </template>
   <script>
-  import LoginDetails from "./UserProfile/LoginDetails.vue";
+  import Register from "./UserProfile/Register.vue";
   export default {
     components: {
-      LoginDetails,
+      Register,
     },
   };
   </script>

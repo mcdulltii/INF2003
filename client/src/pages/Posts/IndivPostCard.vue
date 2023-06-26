@@ -19,7 +19,7 @@
             PSA: Buy your concert tickets directly at SingPost
           </h4>
       <div >
-        <p style="max-height: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+        <p>
           I've been doing ticketing for recent 2023 concert sales and I've noticed somehow the queue numbers can go up to 100k+. This was never the case for previous concert ticketing done with Ticketmaster. I used to be able to get tickets fast under 5min after the sale opened, even without presale. My queue number could be in the thousands but the queue system worked really fast unlike this time when I tried for ATEEZ and The Boyz ticketing.
 <br/>
 Some people reported having queue numbers of 900k for Coldplay for a PRESALE alone. I have suspicions that this is caused by the people openly promoting and selling bypass links. (Yes, they even have bypass links for presale).

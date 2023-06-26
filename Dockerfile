@@ -1,5 +1,6 @@
 FROM 6gosrl/vuejs:latest as client
 
+USER root
 WORKDIR /client
 COPY ./client .
 RUN npm run build

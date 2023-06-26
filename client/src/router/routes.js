@@ -6,13 +6,16 @@ import NotFound from "@/pages/NotFoundPage.vue";
 // App pages
 import Home from "@/pages/Home.vue";
 import Login from "@/pages/Login.vue"
+import Register from "@/pages/Register.vue"
+import IndivPost from "@/pages/IndivPost.vue";
+import CreatePost from "@/pages/CreatePost.vue";
 
 // Admin pages
 import Dashboard from "@/pages/Dashboard.vue";
-import UserProfile from "@/pages/UserProfile.vue";
+import UserProfile from "@/pages/UserPage.vue";
+import UserSettings from "@/pages/UserProfile.vue";
 import Notifications from "@/pages/Notifications.vue";
 import Icons from "@/pages/Icons.vue";
-import Maps from "@/pages/Maps.vue";
 import Typography from "@/pages/Typography.vue";
 import TableList from "@/pages/TableList.vue";
 
@@ -29,9 +32,31 @@ const routes = [
         component: Home,
       },
       {
-        path: "/login",
-        name: "login", 
-        component: Login,
+        path: "/createpost",
+        name: "createpost", 
+        component: CreatePost,
+      },
+      {
+        path: "/userprofile",
+        name: "userprofile", 
+        component: UserProfile,
+      },
+      {
+        path: "/usersettings",
+        name: "usersettings", 
+        component: UserSettings,
+      },
+    ]
+  },
+  {
+    path: '/indivpost',
+    component: () => import('@/layout/post/PostLayout.vue'),
+    hidden: true,
+    children: [
+      {
+        path: "/indivpost",
+        name: "indivpost", 
+        component: IndivPost,
       }
     ]
   },
@@ -44,6 +69,11 @@ const routes = [
         path: "/login",
         name: "login", 
         component: Login,
+      },
+      {
+        path: "/register",
+        name: "register", 
+        component: Register,
       }
     ]
   },
@@ -70,11 +100,6 @@ const routes = [
         path: "/icons",
         name: "icons",
         component: Icons,
-      },
-      {
-        path: "/maps",
-        name: "maps",
-        component: Maps,
       },
       {
         path: "/typography",

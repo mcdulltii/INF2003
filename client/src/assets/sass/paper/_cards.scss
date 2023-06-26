@@ -249,3 +249,13 @@
     border-radius: 4px;
   }
 }
+
+textarea {
+  border-style: border-box; 
+  width: 90%; 
+  height: 35px;
+  background-color: #f3f3f3;
+  border-radius: 4px;
+  padding-left: 10px;
+  outline: 1px solid #ffffff;
+}

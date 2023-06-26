@@ -3,8 +3,9 @@
     <div class="content">
       
       <top-navbar></top-navbar>
+      <div style="padding: 100px 250px">
       <home-content> </home-content>
-
+      </div>
       <content-footer></content-footer>
     </div>
 

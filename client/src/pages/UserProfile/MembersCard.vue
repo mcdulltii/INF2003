@@ -36,22 +36,19 @@
 export default {
   data() {
     return {
-      title: "Team members",
+      title: "Active Communities",
       members: [
         {
           image: require("@/assets/img/faces/face-0.jpg"),
-          name: "Dj Khaled",
-          status: "Offline",
+          name: "r/Test1",
         },
         {
           image: require("@/assets/img/faces/face-1.jpg"),
-          name: "Creative Tim",
-          status: "Available",
+          name: "r/Placeholder",
         },
         {
           image: require("@/assets/img/faces/face-1.jpg"),
-          name: "Flume",
-          status: "Busy",
+          name: "r/Singapore",
         },
       ],
     };

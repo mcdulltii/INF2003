@@ -19,10 +19,7 @@
         </h4>
       </div>
       <p class="description text-center">
-        "I like the way you work it
-        <br />
-        No diggity <br />
-        I wanna bag it up"
+        Hello! I'm just here to post random updates
       </p>
     </div>
     <hr />
@@ -50,15 +47,15 @@ export default {
       details: [
         {
           title: "12",
-          subTitle: "Files",
+          subTitle: "Followers",
         },
         {
-          title: "2GB",
-          subTitle: "Used",
+          title: "20",
+          subTitle: "Posts",
         },
         {
-          title: "24,6$",
-          subTitle: "Spent",
+          title: "24",
+          subTitle: "Comments",
         },
       ],
     };
@@ -67,9 +64,9 @@ export default {
     getClasses(index) {
       var remainder = index % 3;
       if (remainder === 0) {
-        return "col-lg-3 offset-lg-1";
-      } else if (remainder === 2) {
         return "col-lg-4";
+      } else if (remainder === 2) {
+        return "col-lg-5";
       } else {
         return "col-lg-3";
       }

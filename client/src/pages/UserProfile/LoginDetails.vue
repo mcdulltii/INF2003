@@ -1,9 +1,10 @@
 <template>
-    <card class="card" title="Login/Register">
+  <div style="width: 50%; margin: auto">
+    <card class="card" title="Login" style="align-items: center; margin-top: 20%; padding: auto"> 
       <div>
         <form @submit.prevent>
           <div class="row">
-            <div class="col-md-5">
+            <div class="col-md-20">
               <fg-input
                 type="text"
                 label="Username"
@@ -15,7 +16,7 @@
           </div>
   
           <div class="row">
-            <div class="col-md-5">
+            <div class="col-md-20">
               <fg-input
                 type="text"
                 label="Password"
@@ -29,11 +30,23 @@
             <p-button type="info" round @click.native.prevent="updateProfile">
               Sign in
             </p-button>
+            <p style="padding-top: 20px"> OR </p>
+            <p-button type="info" style="background-color: crimson; border:none" round @click.native.prevent="updateProfile">
+              Continue with google
+            </p-button> <br>
+            <p-button type="info" style="background-color: powderblue; border:none; margin: 10px;" round @click.native.prevent="updateProfile">
+              Continue with twitter
+            </p-button>
+            <router-link :to="{ path: '/register' }">
+              <p style="text-decoration: underline;"> New to Bludit? Register now</p>
+          </router-link>
           </div>
-          <div class="clearfix"></div>
+          <div class="clearfix"> </div>
         </form>
+        
       </div>
     </card>
+  </div>
   </template>
   <script>
   export default {
