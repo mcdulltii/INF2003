@@ -25,11 +25,6 @@ app.use(bodyParser.json());
 
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
-});
-
-
 // app.set("views", path.join(__dirname, "views"));
 // app.set("view engine", "pug");
 // app.locals.basedir = path.join(__dirname, "views");
