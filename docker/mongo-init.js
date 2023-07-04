@@ -18,8 +18,8 @@ db.createCollection("posts", {
          required: [ "post_id", "post_datetime", "post_title", "post_url", "flair_text" ],
          properties: {
            post_id: {
-              bsonType: "int",
-              description: "must be an integer and is required"
+              bsonType: "string",
+              description: "must be an string and is required"
            },
            post_datetime: {
               bsonType: "string",
@@ -53,8 +53,8 @@ db.createCollection("comments", {
               description: "must be a string and is required"
            },
            post_id: {
-              bsonType: "int",
-              description: "must be an integer and is required"
+              bsonType: "string",
+              description: "must be an string and is required"
            }
          }
       }

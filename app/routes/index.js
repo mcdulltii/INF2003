@@ -57,5 +57,9 @@ router.get("/comments/get", async (req, res) => {
   res.json(await Comment.find({}));
 });
 
+router.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+});
+
 module.exports = router;
 
