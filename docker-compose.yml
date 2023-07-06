@@ -62,6 +62,15 @@ services:
     networks:
       - app_network
 
+  mongoimport:
+    build:
+      context: ./mongo-import
+    container_name: mongodb-import
+    depends_on:
+      - mongodb
+    networks:
+      - app_network
+
   mongo-express:
     image: mongo-express
     container_name: mongo-express
