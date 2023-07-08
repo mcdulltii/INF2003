@@ -30,3 +30,7 @@ CREATE TABLE `votes` (
   PRIMARY KEY (`vote_id`),
   FOREIGN KEY (`post_id`) REFERENCES `posts`(`post_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+LOAD DATA INFILE '/var/lib/mysql-import/posts.csv' INTO TABLE posts FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+LOAD DATA INFILE '/var/lib/mysql-import/forums.csv' INTO TABLE forums FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+LOAD DATA INFILE '/var/lib/mysql-import/users.csv' INTO TABLE users FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
