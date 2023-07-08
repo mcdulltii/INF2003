@@ -9,6 +9,9 @@ const router = express.Router();
 var Post = mongoose.model('Post');
 var Comment = mongoose.model('Comment');
 
+// Default variables
+const page_offset = 10;
+
 async function runSQLQuery(query) {
   let conn;
   try {
@@ -64,9 +67,9 @@ router.post("/posts/add", async (req, res) => {
   res.json(post);
 });
 
-// Create a route to get all posts from MongoDB
-router.get("/posts/get", async (req, res) => {
-  res.json(await Post.find({}));
+// Create a route to get posts by page offsets from MongoDB
+router.get("/posts/:current_page", async (req, res) => {
+  res.json(await Post.find({}).skip(req.params.current_page * page_offset).limit(page_offset));
 });
 
 // Route to get a specific post from MongoDB
@@ -107,9 +110,9 @@ router.post("/comments/add", async (req, res) => {
   res.json(comment);
 });
 
-// Create a route to get all comments from MongoDB
-router.get("/comments/get", async (req, res) => {
-  res.json(await Comment.find({}));
+// Create a route to get comments by page offsets from MongoDB
+router.get("/comments/:current_page", async (req, res) => {
+  res.json(await Comment.find({}).skip(req.params.current_page * page_offset).limit(page_offset));
 });
 
 // Route to get comments from a specific post from MongoDB
