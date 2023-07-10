@@ -56,9 +56,10 @@ router.get("/votes", (req, res) => {
 router.post("/posts/add", async (req, res) => {
   var post = new Post();
 
-  post.post_id = req.body.post_id;
+  // if post_id is not passed in, generate a random 7 length string
+  post.post_id = req.body.post_id ?? Math.random().toString(36).substring(2, 9);
   post.post_title = req.body.post_title;
-  post.subreddit = req.body.subreddit;
+  post.subreddit = req.body.subreddit ?? "All";
   post.post_url = req.body.post_url;
   post.flair_text = req.body.flair_text;
   post.post_datetime = req.body.post_datetime ?? new Date().toISOString().slice(0, 19);
@@ -69,7 +70,16 @@ router.post("/posts/add", async (req, res) => {
 
 // Create a route to get posts by page offsets from MongoDB
 router.get("/posts/:current_page", async (req, res) => {
-  res.json(await Post.find({}).skip(req.params.current_page * page_offset).limit(page_offset));
+  // get number of pages
+  var num_posts = await Post.countDocuments({});
+  var num_pages = Math.ceil(num_posts / page_offset);
+
+  var posts = await Post.find({}).skip(req.params.current_page * page_offset).limit(page_offset);
+
+  res.json({
+    num_pages: num_pages,
+    posts: posts
+  });
 });
 
 // Route to get a specific post from MongoDB
@@ -112,7 +122,16 @@ router.post("/comments/add", async (req, res) => {
 
 // Create a route to get comments by page offsets from MongoDB
 router.get("/comments/:current_page", async (req, res) => {
-  res.json(await Comment.find({}).skip(req.params.current_page * page_offset).limit(page_offset));
+  // get number of pages
+  var num_comments = await Comment.countDocuments({});
+  var num_pages = Math.ceil(num_comments / page_offset);
+
+  var comments = await Comment.find({}).skip(req.params.current_page * page_offset).limit(page_offset);
+
+  res.json({
+    num_pages: num_pages,
+    comments: comments
+  });
 });
 
 // Route to get comments from a specific post from MongoDB

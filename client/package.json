@@ -7,7 +7,7 @@
     "e2e": "node test/e2e/runner.js",
     "lint": "vue-cli-service lint",
     "lint-fix": "vue-cli-service lint --fix",
-    "serve": "vue-cli-service serve --open",
+    "serve": "set NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service serve --open --port 8000",
     "dev": "npm run serve"
   },
   "dependencies": {
@@ -19,7 +19,8 @@
     "vue": "2.7.14",
     "vue-clickaway": "2.2.2",
     "vue-notifyjs": "0.3.0",
-    "vue-router": "3.0.1"
+    "vue-router": "3.0.1",
+    "vuejs-paginate": "^2.1.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "3.12.1",
