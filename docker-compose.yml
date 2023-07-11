@@ -65,7 +65,7 @@ services:
 
   mongoimport:
     build:
-      context: ./mongo-import
+      context: ./docker/mongo-import
     container_name: mongodb-import
     depends_on:
       - mongodb
