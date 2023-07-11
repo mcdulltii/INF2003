@@ -47,7 +47,7 @@
 <script>
 import Paginate from 'vuejs-paginate';
 import '@/assets/css/mongo-admin.css';
-import '@/assets/css/paginate.css';
+import '@/assets/css/pagination.css';
 
 export default {
     components: {
