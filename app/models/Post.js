@@ -3,8 +3,9 @@ const mongoose = require("mongoose");
 // MongoDB Posts
 var PostSchema = new mongoose.Schema({
   post_id: String,
-  post_datetime: Date,
+  post_datetime: String,
   post_title: String,
+  subreddit: String,
   post_url: String,
   flair_text: String
 });

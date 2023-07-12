@@ -27,8 +27,9 @@ services:
       - MARIADB_USER=user
       - MARIADB_PASSWORD=password
     volumes:
-      - ./mysql-data:/var/lib/mysql
+      # - ./mysql-data:/var/lib/mysql
       - ./docker/mysql-init.sql:/docker-entrypoint-initdb.d/mysql-init.sql:ro
+      - ./docker/mysql-import:/mysql-import
     networks:
       - app_network
 
@@ -52,13 +53,22 @@ services:
     container_name: mongodb
     restart: always
     volumes:
-      - ./mongo-data:/data/db
+      # - ./mongo-data:/data/db
       - ./docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     environment:
       - MONGO_INITDB_DATABASE=mongo_db
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=password
     command: --quiet
+    networks:
+      - app_network
+
+  mongoimport:
+    build:
+      context: ./docker/mongo-import
+    container_name: mongodb-import
+    depends_on:
+      - mongodb
     networks:
       - app_network
 

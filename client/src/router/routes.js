@@ -18,6 +18,7 @@ import Notifications from "@/pages/Notifications.vue";
 import Icons from "@/pages/Icons.vue";
 import Typography from "@/pages/Typography.vue";
 import TableList from "@/pages/TableList.vue";
+import PostsAdmin from '@/pages/MongoAdmin/PostsAdmin.vue'
 
 const routes = [
   {
@@ -110,6 +111,11 @@ const routes = [
         path: "/table-list",
         name: "table-list",
         component: TableList,
+      },
+      {
+        path: "/posts-admin",
+        name: "posts-admin",
+        component: PostsAdmin,
       },
     ],
   },

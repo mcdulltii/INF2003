@@ -1,9 +1,12 @@
 FROM 6gosrl/vuejs:latest as client
 
 USER root
+
 WORKDIR /client
-COPY ./client .
+
+COPY ./client/package.json .
 RUN npm install
+COPY ./client .
 RUN npm run build
 
 FROM node:alpine
