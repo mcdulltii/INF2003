@@ -145,6 +145,22 @@ router.get("/comments/get/id/:_id", async (req, res) => {
   res.json(comment);
 });
 
+// Route to search for a comment using a key value pair from MongoDB
+router.get("/comments/search/:key/:value/:page", async (req, res) => {
+  var query = {};
+  query[req.params.key] = { $regex: req.params.value, $options: "i" };
+  var comments = await Comment.find(query).skip(req.params.page * page_offset).limit(page_offset);
+
+  // get number of pages
+  var num_comments = await Comment.countDocuments(query);
+  var num_pages = Math.ceil(num_comments / page_offset);
+
+  res.json({
+    num_pages: num_pages,
+    comments: comments
+  });
+});
+
 // Route to update a comment in MongoDB
 router.post("/comments/update/:_id", async (req, res) => {
   var comment = await Comment.findOne({ _id: req.params._id });
