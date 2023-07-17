@@ -98,19 +98,19 @@ export default {
         onDeleteClick: function (id) {
             console.log(id);
             if (confirm('Are you sure you want to delete this comment?')) {
-                // call api to delete post
+                // call api to delete comment
                 fetch('/comments/delete/' + id, {method: 'POST'})
                     .then(response => response.json())
                     .catch(error => {
                         console.log(error);
                     });
 
-                // call api to get new posts and update table
+                // call api to get new comments and update table
                 this.reloadTable(this.current_page);
             }
         },
         onSaveClick: function (id) {
-            // if current_id is null, then we are adding a new post
+            // if current_id is null, then we are adding a new comment
             if (id === null) {
                 this.addComment();
             } else {
@@ -122,7 +122,7 @@ export default {
             var post_id = document.getElementById('post-id-input').value;
             var comment_message = document.getElementById('comment-message-input').value;
 
-            // create new post object
+            // create new comment object
             var newComment = {
                 post_id: post_id,
                 comment_message: comment_message
@@ -141,7 +141,7 @@ export default {
                     console.log(error);
                 });
 
-            // call api to get new posts and update table
+            // call api to get new comment and update table
             this.reloadTable(this.current_page);
 
             // clear inputs
@@ -152,13 +152,13 @@ export default {
             var post_id = document.getElementById('post-id-input').value;
             var comment_message = document.getElementById('comment-message-input').value;
 
-            // create new post object
+            // create new comment object
             var updatedComment = {
                 post_id: post_id,
                 comment_message: comment_message
             };
 
-            // call api to update post
+            // call api to update comment
             fetch('/comments/update/' + id, {
                 method: 'POST',
                 headers: {
@@ -171,7 +171,7 @@ export default {
                     console.log(error);
                 });
 
-            // call api to get new posts and update table
+            // call api to get new comment and update table
             this.reloadTable(this.current_page);
         },
         onSearchClick: function () {
