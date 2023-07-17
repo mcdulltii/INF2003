@@ -59,7 +59,7 @@ export default {
             tableData: [],
             pageCount: 20,
             current_page: 0,
-            current_id: null, // id of post being edited
+            current_id: null, // id of comment being edited
             current_search_key: null,
             current_search_value: null
         };
@@ -80,8 +80,7 @@ export default {
             this.current_page = pageNum;
         },
         onEditClick: function (id) {
-            console.log('id');
-
+            console.log(id);
             // get comment from tableData
             var comment = this.tableData.find(item => item._id === id);
             console.log(comment);
@@ -182,6 +181,7 @@ export default {
             // call api to search for comments
             this.searchComments(key, value, '0');
 
+            // set current_search_key and current_search_value
             this.current_search_key = key;
             this.current_search_value = value;
         },
