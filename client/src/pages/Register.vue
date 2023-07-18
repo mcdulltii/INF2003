@@ -78,15 +78,15 @@ export default {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            username: this.username,
-            password: this.password,
+            username: this.user.username,
+            password: this.user.password,
           }),
         });
 
         if (response.ok) {
           // Registration successful
-          this.username = '';
-          this.password = '';
+          this.user.username = '';
+          this.user.password = '';
           this.error = '';
           // Redirect to the login page
           this.$router.push('/login');

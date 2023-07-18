@@ -1,6 +1,7 @@
 const getConnection = require("../app");
 const express = require('express');
 const mongoose = require("mongoose");
+const crypto = require('crypto');
 
 // ExpressJS routing
 const router = express.Router();
@@ -30,43 +31,23 @@ async function runSQLQuery(query) {
   }
 }
 
-// Create a route to get all users from MySQL
-router.get("/users", (req, res) => {
-  res.json(runSQLQuery("SELECT * FROM users"));
-});
-
-// Create a route to get all forums from MySQL
-router.get("/forums", (req, res) => {
-  res.json(runSQLQuery("SELECT * FROM forums"));
-});
-
-// Create a route to get all posts from MySQL
-router.get("/posts", (req, res) => {
-  res.json(runSQLQuery("SELECT * FROM posts"));
-});
-
-// Create a route to get all votes from MySQL
-router.get("/votes", (req, res) => {
-  res.json(runSQLQuery("SELECT * FROM votes"));
-});
-
 // Create a route to create a new user in SQL
-router.post("/users/signup", async (req, res) => {
+router.post("/users/signup", (req, res) => {
   const { username, password } = req.body;
-  const query = `INSERT INTO users (user_name, user_password_hash, is_admin) VALUES ('${username}', '${password}', 0)`;
-  const result = await runSQLQuery(query);
+  const query = `INSERT INTO users VALUES ('${crypto.randomUUID()}', '${username}', '${password}', 0)`;
+  const result = runSQLQuery(query);
   res.json(result);
 });
 
 // Create a route to authenticate a user in SQL
-router.get("/users/login", async (req, res) => {
+router.post("/users/login", (req, res) => {
   const { username, password } = req.body;
   const query = `SELECT * FROM users WHERE user_name = '${username}' AND user_password_hash = '${password}'`;
-  const result = await runSQLQuery(query);
+  const result = runSQLQuery(query);
 
   if (result.length > 0) {
     // Login successful
-    res.json({ success: true });
+    res.status(200).json({ success: true });
   } else {
     // Login failed
     res.status(401).json({ error: 'Invalid username or password.' });
@@ -74,35 +55,19 @@ router.get("/users/login", async (req, res) => {
 });
 
 // Create a route to update a user in SQL
-router.put("/users/update/:id", async (req, res) => {
+router.put("/users/update/:id", (req, res) => {
   const { id } = req.params;
   const { username, password } = req.body;
   const query = `UPDATE users SET user_name = '${username}', user_password_hash = '${password}' WHERE user_id = ${id}`;
-  const result = await runSQLQuery(query);
+  const result = runSQLQuery(query);
   res.json(result);
 });
 
 // Create a route to delete a user from SQL
-router.delete("/users/delete/:id", async (req, res) => {
+router.delete("/users/delete/:id", (req, res) => {
   const { id } = req.params;
   const query = `DELETE FROM users WHERE user_id = ${id}`;
-  const result = await runSQLQuery(query);
-  res.json(result);
-});
-
-// Create a route to create a new user in SQL
-router.post("/users/signup", async (req, res) => {
-  const { username, password } = req.body;
-  const query = `INSERT INTO users (user_name, user_password_hash, is_admin) VALUES ('${username}', '${password}', 0)`;
-  const result = await runSQLQuery(query);
-  res.json(result);
-});
-
-// Create a route to display a user ID
-router.post("/users/", async (req, res) => {
-  const { username, password } = req.body;
-  const query = `INSERT INTO users (user_name, user_password_hash, is_admin) VALUES ('${username}', '${password}', 0)`;
-  const result = await runSQLQuery(query);
+  const result = runSQLQuery(query);
   res.json(result);
 });
 

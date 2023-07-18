@@ -63,14 +63,14 @@ export default {
     async loginUser() {
       try {
         const response = await fetch('/users/login', {
-          method: 'GET',
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          /*body: JSON.stringify({
-            username: this.username,
-            password: this.password,
-          }),*/
+          body: JSON.stringify({
+            username: this.user.username,
+            password: this.user.password,
+          }),
         });
 
         if (response.ok) {
