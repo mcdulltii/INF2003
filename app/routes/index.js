@@ -13,62 +13,91 @@ var Comment = mongoose.model('Comment');
 // Default variables
 const page_offset = 10;
 
-async function runSQLQuery(query) {
+// Create a route to create a new user in SQL
+router.post("/users/signup", async (req, res) => {
+  const { username, password } = req.body;
   let conn;
   try {
     // Make a connection to MariaDB
     conn = await getConnection();
 
     // Run the query
-    var rows = await conn.query(query);
+    var rows = await conn.query("INSERT INTO users VALUES (?, ?, ?, ?)", [crypto.randomUUID(), username, password, 0]);
 
     // Return the results
-    return rows;
+    res.json(rows);
   } catch (err) {
-    return err;
+    res.json(err);
   } finally {
     if (conn) conn.release();
   }
-}
-
-// Create a route to create a new user in SQL
-router.post("/users/signup", (req, res) => {
-  const { username, password } = req.body;
-  const query = `INSERT INTO users VALUES ('${crypto.randomUUID()}', '${username}', '${password}', 0)`;
-  const result = runSQLQuery(query);
-  res.json(result);
 });
 
 // Create a route to authenticate a user in SQL
-router.post("/users/login", (req, res) => {
+router.post("/users/login", async (req, res) => {
   const { username, password } = req.body;
-  const query = `SELECT * FROM users WHERE user_name = '${username}' AND user_password_hash = '${password}'`;
-  const result = runSQLQuery(query);
+  let conn;
+  try {
+    // Make a connection to MariaDB
+    conn = await getConnection();
 
-  if (result.length > 0) {
-    // Login successful
-    res.status(200).json({ success: true });
-  } else {
-    // Login failed
-    res.status(401).json({ error: 'Invalid username or password.' });
+    // Run the query
+    var rows = await conn.query("SELECT * FROM users WHERE user_name = ? AND user_password_hash = ?", [username, password]);
+
+    // Return the results
+    if (rows.length > 0) {
+      // Login successful
+      res.status(200).json({ success: true });
+    } else {
+      // Login failed
+      res.status(401).json({ error: 'Invalid username or password.' });
+    }
+  } catch (err) {
+    res.json(err);
+  } finally {
+    if (conn) conn.release();
   }
 });
 
 // Create a route to update a user in SQL
-router.put("/users/update/:id", (req, res) => {
+router.put("/users/update/:id", async (req, res) => {
   const { id } = req.params;
   const { username, password } = req.body;
-  const query = `UPDATE users SET user_name = '${username}', user_password_hash = '${password}' WHERE user_id = ${id}`;
-  const result = runSQLQuery(query);
-  res.json(result);
+  let conn;
+  try {
+    // Make a connection to MariaDB
+    conn = await getConnection();
+
+    // Run the query
+    var rows = await conn.query("UPDATE users SET user_name = ?, user_password_hash = ? WHERE user_id = ?", [username, password, id]);
+
+    // Return the results
+    res.json(rows);
+  } catch (err) {
+    res.json(err);
+  } finally {
+    if (conn) conn.release();
+  }
 });
 
 // Create a route to delete a user from SQL
-router.delete("/users/delete/:id", (req, res) => {
+router.delete("/users/delete/:id", async (req, res) => {
   const { id } = req.params;
-  const query = `DELETE FROM users WHERE user_id = ${id}`;
-  const result = runSQLQuery(query);
-  res.json(result);
+  let conn;
+  try {
+    // Make a connection to MariaDB
+    conn = await getConnection();
+
+    // Run the query
+    var rows = await conn.query("DELETE FROM users WHERE user_id =  ?", [id]);
+
+    // Return the results
+    res.json(rows);
+  } catch (err) {
+    res.json(err);
+  } finally {
+    if (conn) conn.release();
+  }
 });
 
 // Route to add a post to MongoDB
