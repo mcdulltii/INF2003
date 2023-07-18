@@ -19,6 +19,7 @@ import Icons from "@/pages/Icons.vue";
 import Typography from "@/pages/Typography.vue";
 import TableList from "@/pages/TableList.vue";
 import PostsAdmin from '@/pages/MongoAdmin/PostsAdmin.vue'
+import CommentsAdmin from '@/pages/MongoAdmin/CommentsAdmin.vue'
 
 const routes = [
   {
@@ -116,6 +117,11 @@ const routes = [
         path: "/posts-admin",
         name: "posts-admin",
         component: PostsAdmin,
+      },
+      {
+        path: "/comments-admin",
+        name: "comments-admin",
+        component: CommentsAdmin,
       },
     ],
   },

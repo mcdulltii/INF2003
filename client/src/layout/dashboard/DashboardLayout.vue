@@ -13,6 +13,7 @@
         <sidebar-link to="/icons" name="Icons" icon="ti-pencil-alt2" />
         <sidebar-link to="/notifications" name="Notifications" icon="ti-bell" />
         <sidebar-link to="/posts-admin" name="Posts" icon="ti-panel" />
+        <sidebar-link to="/comments-admin" name="Comments" icon="ti-panel" />
       </template>
       <mobile-menu>
         <li class="nav-item">

@@ -93,6 +93,22 @@ router.get("/posts/search/:search_term", async (req, res) => {
   res.json(await Post.find({ post_title: { $regex: req.params.search_term, $options: "i" } }));
 });
 
+// Route to search for a post using a key value pair from MongoDB
+router.get("/posts/search/:key/:value/:page", async (req, res) => {
+  var query = {};
+  query[req.params.key] = { $regex: req.params.value, $options: "i" };
+  var posts = await Post.find(query).skip(req.params.page * page_offset).limit(page_offset);
+  
+  // get number of pages
+  var num_posts = await Post.countDocuments(query);
+  var num_pages = Math.ceil(num_posts / page_offset);
+
+  res.json({
+    num_pages: num_pages,
+    posts: posts
+  });
+});
+
 // Route to update a post in MongoDB
 router.post("/posts/update/:post_id", async (req, res) => {
   var post = await Post.findOne({ post_id: req.params.post_id });
@@ -145,6 +161,22 @@ router.get("/comments/get/:post_id", async (req, res) => {
 router.get("/comments/get/id/:_id", async (req, res) => {
   var comment = await Comment.findOne({ _id: req.params._id });
   res.json(comment);
+});
+
+// Route to search for a comment using a key value pair from MongoDB
+router.get("/comments/search/:key/:value/:page", async (req, res) => {
+  var query = {};
+  query[req.params.key] = { $regex: req.params.value, $options: "i" };
+  var comments = await Comment.find(query).skip(req.params.page * page_offset).limit(page_offset);
+
+  // get number of pages
+  var num_comments = await Comment.countDocuments(query);
+  var num_pages = Math.ceil(num_comments / page_offset);
+
+  res.json({
+    num_pages: num_pages,
+    comments: comments
+  });
 });
 
 // Route to update a comment in MongoDB

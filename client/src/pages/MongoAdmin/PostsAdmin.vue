@@ -17,6 +17,13 @@
                 <button id="save-button" v-on:click="onSaveClick(current_id)">Save</button>
             </div>
         </div>
+        <br>
+        <div>
+            <input type="text" id="key-input" placeholder="Key">
+            <input type="text" id="value-input" placeholder="Value">
+            <button id="search-button" v-on:click="onSearchClick()">Search</button>
+        </div>
+        <br>
         <div class="table-container">
             <table class="table">
                 <thead>
@@ -57,8 +64,10 @@ export default {
         return {
             tableData: [],
             pageCount: 20,
-            current_page: 1,
-            current_id: null // id of post being edited
+            current_page: 0,
+            current_id: null, // id of post being edited
+            current_search_key: null,
+            current_search_value: null
         };
     },
     mounted() {
@@ -66,6 +75,8 @@ export default {
     },
     methods: {
         onPaginationClick: function (pageNum) {
+            // subtract 1 from pageNum because pagination starts at 1 but api starts at 0
+            pageNum = pageNum - 1;
             console.log(pageNum);
             this.reloadTable(pageNum);
             this.clearInputs();
@@ -176,8 +187,39 @@ export default {
             // call api to get new posts and update table
             this.reloadTable(this.current_page);
         },
+        onSearchClick: function () {
+            // get key and value from inputs
+            var key = document.getElementById('key-input').value;
+            var value = document.getElementById('value-input').value;
+
+            // call api to search for posts
+            this.searchPosts(key, value, '0');
+
+            // set current_search_key and current_search_value
+            this.current_search_key = key;
+            this.current_search_value = value;
+        },
         reloadTable: function (page) {
-            fetch('/posts/' + page)
+            // if current_search_key and current_search_value are not null, then get posts by search
+            // else get all posts
+            if (this.current_search_key !== null && this.current_search_value !== null) {
+                this.searchPosts(this.current_search_key, this.current_search_value, page);
+            } else {
+                fetch('/posts/' + page)
+                    .then(response => response.json())
+                    .then(data => {
+                        this.tableData = data.posts;
+                        // remove _v from tableData
+                        this.tableData.forEach(item => delete item.__v);
+                        this.pageCount = data.num_pages;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            }
+        },
+        searchPosts: function (key, value, page) {
+            fetch('/posts/search/' + key + '/' + value + '/' + page)
                 .then(response => response.json())
                 .then(data => {
                     this.tableData = data.posts;
