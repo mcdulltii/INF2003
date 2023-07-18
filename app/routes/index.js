@@ -50,7 +50,61 @@ router.get("/votes", (req, res) => {
   res.json(runSQLQuery("SELECT * FROM votes"));
 });
 
+// Create a route to create a new user in SQL
+router.post("/users/signup", async (req, res) => {
+  const { username, password } = req.body;
+  const query = `INSERT INTO users (user_name, user_password_hash, is_admin) VALUES ('${username}', '${password}', 0)`;
+  const result = await runSQLQuery(query);
+  res.json(result);
+});
 
+// Create a route to authenticate a user in SQL
+router.get("/users/login", async (req, res) => {
+  const { username, password } = req.body;
+  const query = `SELECT * FROM users WHERE user_name = '${username}' AND user_password_hash = '${password}'`;
+  const result = await runSQLQuery(query);
+
+  if (result.length > 0) {
+    // Login successful
+    res.json({ success: true });
+  } else {
+    // Login failed
+    res.status(401).json({ error: 'Invalid username or password.' });
+  }
+});
+
+// Create a route to update a user in SQL
+router.put("/users/update/:id", async (req, res) => {
+  const { id } = req.params;
+  const { username, password } = req.body;
+  const query = `UPDATE users SET user_name = '${username}', user_password_hash = '${password}' WHERE user_id = ${id}`;
+  const result = await runSQLQuery(query);
+  res.json(result);
+});
+
+// Create a route to delete a user from SQL
+router.delete("/users/delete/:id", async (req, res) => {
+  const { id } = req.params;
+  const query = `DELETE FROM users WHERE user_id = ${id}`;
+  const result = await runSQLQuery(query);
+  res.json(result);
+});
+
+// Create a route to create a new user in SQL
+router.post("/users/signup", async (req, res) => {
+  const { username, password } = req.body;
+  const query = `INSERT INTO users (user_name, user_password_hash, is_admin) VALUES ('${username}', '${password}', 0)`;
+  const result = await runSQLQuery(query);
+  res.json(result);
+});
+
+// Create a route to display a user ID
+router.post("/users/", async (req, res) => {
+  const { username, password } = req.body;
+  const query = `INSERT INTO users (user_name, user_password_hash, is_admin) VALUES ('${username}', '${password}', 0)`;
+  const result = await runSQLQuery(query);
+  res.json(result);
+});
 
 // Route to add a post to MongoDB
 router.post("/posts/add", async (req, res) => {

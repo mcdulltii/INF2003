@@ -2,7 +2,7 @@
   <div style="width: 50%; margin: auto">
     <card class="card" title="Login" style="align-items: center; margin-top: 20%; padding: auto"> 
       <div>
-        <form @submit.prevent>
+        <form @submit.prevent="loginUser">
           <div class="row">
             <div class="col-md-20">
               <fg-input
@@ -18,7 +18,7 @@
           <div class="row">
             <div class="col-md-20">
               <fg-input
-                type="text"
+                type="password"
                 label="Password"
                 placeholder="Password"
                 v-model="user.password"
@@ -27,7 +27,7 @@
             </div>
           </div>
           <div class="text-center">
-            <p-button type="info" round @click.native.prevent="updateProfile">
+            <p-button type="info" round @click.native.prevent="loginUser">
               Sign in
             </p-button>
             <p style="padding-top: 20px"> OR </p>
@@ -39,31 +39,58 @@
             </p-button>
             <router-link :to="{ path: '/register' }">
               <p style="text-decoration: underline;"> New to Bludit? Register now</p>
-          </router-link>
+            </router-link>
           </div>
           <div class="clearfix"> </div>
         </form>
-        
       </div>
     </card>
   </div>
-  </template>
-  <script>
-  export default {
-    data() {
-      return {
-        user: {
-          username: "michael23",
-          password: "",
-        },
-      };
-    },
-    methods: {
-      updateProfile() {
-        alert("Your data: " + JSON.stringify(this.user));
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      user: {
+        username: '',
+        password: '',
       },
+      error: '',
+    };
+  },
+  methods: {
+    async loginUser() {
+      try {
+        const response = await fetch('/users/login', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          /*body: JSON.stringify({
+            username: this.username,
+            password: this.password,
+          }),*/
+        });
+
+        if (response.ok) {
+          // Login successful
+          this.user.password = '';
+          this.error = '';
+          // Redirect to the home page
+          this.$router.push('/');
+        } else {
+          // Login failed
+          const data = await response.json();
+          this.error = data.error || 'Login failed.';
+        }
+      } catch (error) {
+        console.error(error);
+        this.error = 'An error occurred during login.';
+      }
     },
-  };
-  </script>
-  <style></style>
-  
+  },
+};
+</script>
+
+<style></style>
