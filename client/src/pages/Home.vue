@@ -13,33 +13,60 @@
           </router-link>
           </div>
         </card>
-        <router-link v-for="item in items" :to="{ path: '/indivpost' }" :key="item.post_id">
+        <router-link v-for="item in items" :to="{ path: '/indivpost/' + item.post_id }" :key="item.post_id">
         <Post-Card v-bind="item"></Post-Card>
         </router-link>
+        <div class="pagination-wrapper">
+            <paginate :page-count="pageCount" :click-handler="onPaginationClick" :prev-text="'Prev'" :next-text="'Next'"
+                :container-class="'pagination'">
+            </paginate>
+        </div>
     </div>
 </template>
 <script>
+  import Paginate from 'vuejs-paginate';
+  import '@/assets/css/mongo-admin.css';
+  import '@/assets/css/pagination.css';
   import axios from 'axios';
   import PostCard from "./Posts/PostCard.vue";
   export default {
     data () {
       return {
-        items: []
+        items: [],
+        pageCount: 20,
+        current_page: 1,
       }
     },
     mounted () {
-      axios.get('/posts/0')
-        .then(response => {
-          if(response.status = 200) {
-            this.items = response.data;
-          }
-        })
-        .catch(error => {
-            console.log(error);
-        });
+      this.reloadPosts(this.current_page);
+    },
+    methods: {
+      onPaginationClick: function (pageNum) {
+            console.log(pageNum);
+            this.reloadTable(pageNum);
+            this.clearInputs();
+            
+            this.current_id = null;
+            this.current_page = pageNum;
+
+        },
+        reloadPosts: function (page) {
+            fetch('/posts/' + page)
+                .then(response => response.json())
+                .then(data => {
+                    this.items = data.posts;
+                    // remove _v from tableData
+                    this.items.forEach(item => delete item.__v);
+                    this.pageCount = data.num_pages;
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        },
     },
     components: {
       PostCard,
+      Paginate
     },
   };
   </script>

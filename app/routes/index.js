@@ -63,6 +63,7 @@ router.post("/posts/add", async (req, res) => {
   post.post_url = req.body.post_url;
   post.flair_text = req.body.flair_text;
   post.post_datetime = req.body.post_datetime ?? new Date().toISOString().slice(0, 19);
+  post.post_content = req.body.post_content;
   
   await post.save();
   res.json(post);
@@ -102,6 +103,7 @@ router.post("/posts/update/:post_id", async (req, res) => {
   post.post_url = req.body.post_url ?? post.post_url;
   post.flair_text = req.body.flair_text ?? post.flair_text;
   post.post_datetime = req.body.post_datetime ?? post.post_datetime;
+  post.post_content = req.body.post_content ?? post.post_content;
   
   await post.save();
   res.json(post);

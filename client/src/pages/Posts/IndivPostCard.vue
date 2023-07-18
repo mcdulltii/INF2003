@@ -1,5 +1,5 @@
 <template>
-    <card class="card-user" style="padding: 20px 20px 0px 20px;">
+    <card class="card-user" style="margin-top: 40px; padding: 20px 20px 0px 20px;">
         <div class="row" style="margin-left: 20px; transform: scale(0.70); margin-left: calc((0.5 - 1) * 390px); margin-top: calc((0.5 - 1) * 100px); margin-bottom: calc((0.5 - 1) * 120px);">
             <img
             class="avatar border-white"
@@ -12,11 +12,11 @@
             <a href="#">
               <small>&#2022 Posted by: @chetfaker</small>
             </a>
-            <small>&nbsp 5 days ago</small>
+            <small id="post-datetime"></small>
           </h4>
         </div>
-          <h4 class="title">
-            PSA: Buy your concert tickets directly at SingPost
+          <h4 class="title" id="post-title">
+            {{ post.post_title }}
           </h4>
       <div >
         <p>
@@ -54,6 +54,7 @@ True enough, this whole chaos started with the TWICE concert this June with insa
   </template>
   <script>
   export default {
+    props: ['post'],
     methods: {
       getClasses(index) {
         var remainder = index % 3;

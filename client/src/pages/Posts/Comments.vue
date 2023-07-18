@@ -1,5 +1,5 @@
 <template>
-    <card class="card-user" style="padding: auto;">
+    <card class="card-user">
         <div class="row" style="transform: scale(0.70); margin-left: calc((0.5 - 1) * 390px); margin-top: calc((0.5 - 1) * 100px); margin-bottom: calc((0.5 - 1) * 120px);">
             <img
             class="avatar border-white"

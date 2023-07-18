@@ -55,7 +55,7 @@ const routes = [
     hidden: true,
     children: [
       {
-        path: "/indivpost",
+        path: "/indivpost/:id",
         name: "indivpost", 
         component: IndivPost,
       }
