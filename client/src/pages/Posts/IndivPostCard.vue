@@ -1,5 +1,6 @@
 <template>
-    <card class="card-user" style="margin-top: 40px; padding: 20px 20px 0px 20px;">
+<div style="padding: 20px 200px">
+      <card v-if="post" class="card-user" style="margin-top: 40px; padding: 20px 20px 0px 20px;">
         <div class="row" style="margin-left: 20px; transform: scale(0.70); margin-left: calc((0.5 - 1) * 390px); margin-top: calc((0.5 - 1) * 100px); margin-bottom: calc((0.5 - 1) * 120px);">
             <img
             class="avatar border-white"
@@ -8,11 +9,11 @@
             style="transform: scale(0.5);"
           />
           <h4 class="title" style="margin-left: calc((0.5 - 1) *30px);">
-            r/Singapore
+            r/{{ post.subreddit }}
             <a href="#">
               <small>&#2022 Posted by: @chetfaker</small>
             </a>
-            <small id="post-datetime"></small>
+            <small id="post-datetime">{{ post.post_datetime }}</small>
           </h4>
         </div>
           <h4 class="title" id="post-title">
@@ -51,10 +52,17 @@ True enough, this whole chaos started with the TWICE concert this June with insa
         </div>
       </div>
     </card>
+        <Comments></Comments>
+    </div>
   </template>
   <script>
   export default {
-    props: ['post'],
+    props: {
+      post: {
+        type: Object,
+        required: true,
+      },
+    },
     methods: {
       getClasses(index) {
         var remainder = index % 3;

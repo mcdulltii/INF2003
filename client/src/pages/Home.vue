@@ -58,6 +58,12 @@
                     // remove _v from tableData
                     this.items.forEach(item => delete item.__v);
                     this.pageCount = data.num_pages;
+
+                    this.items.sort((a, b) => {
+                    const dateA = new Date(a.post_datetime);
+                    const dateB = new Date(b.post_datetime);
+                    return dateB - dateA;
+                  });
                 })
                 .catch(error => {
                     console.log(error);

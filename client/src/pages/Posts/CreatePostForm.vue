@@ -39,9 +39,16 @@
           </div>
         </div>
         <div class="text-right">
-          <p-button type="info" id="create-post-button" round v-on:click="onCreateClick(current_id)">
-            Post
-          </p-button>
+          <router-link
+          :to="{ path: '/indivpost/' + post_id }"
+          tag="p-button"
+          type="info"
+          id="create-post-button"
+          round
+          @click="onCreateClick()"
+        >
+          Post
+        </router-link>
         </div>
         <div class="clearfix"></div>
       </form>

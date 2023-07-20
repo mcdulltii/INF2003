@@ -1,6 +1,6 @@
 <template>
     <div style="padding: 20px 200px">
-      <card class="card-user" style="margin-top: 40px; padding: 20px 20px 0px 20px;">
+      <card v-if="post" class="card-user" style="margin-top: 40px; padding: 20px 20px 0px 20px;">
         <div class="row" style="margin-left: 20px; transform: scale(0.70); margin-left: calc((0.5 - 1) * 390px); margin-top: calc((0.5 - 1) * 100px); margin-bottom: calc((0.5 - 1) * 120px);">
             <img
             class="avatar border-white"
@@ -9,11 +9,11 @@
             style="transform: scale(0.5);"
           />
           <h4 class="title" style="margin-left: calc((0.5 - 1) *30px);">
-            r/Singapore
+            r/{{ post.subreddit }}
             <a href="#">
               <small>&#2022 Posted by: @chetfaker</small>
             </a>
-            <small id="post-datetime"></small>
+            <small id="post-datetime">{{ post.post_datetime }}</small>
           </h4>
         </div>
           <h4 class="title" id="post-title">
@@ -60,20 +60,24 @@ True enough, this whole chaos started with the TWICE concert this June with insa
   import IndivPostCard from "./Posts/IndivPostCard.vue";
   import Comments from "./Posts/Comments.vue";
   export default {
-    data() {
+  data() {
     return {
-     post: {}
-    }
-   },
-   created() {
-    let uri = `/posts/get/${this.$route.params.id}`;
-    this.axios.get(uri).then((response) => {
-      this.post = response.data;
-    });
-   },
-    components: {
-      IndivPostCard,
-      Comments
+      post: null,
+      id: this.$route.params.id,
+    };
+  },
+  created() {
+    this.fetchPostData();
+  },
+  methods: {
+    async fetchPostData() {
+      try {
+        const response = await axios.get('/posts/get/' + this.$route.params.id);
+        this.post = response.data[0]; // Assuming the response is an array, you can modify this based on your server response
+      } catch (error) {
+        console.error('Error fetching post data:', error);
+      }
     },
-  };
+  },
+};
   </script>
