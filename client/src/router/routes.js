@@ -59,6 +59,11 @@ const routes = [
         path: "/indivpost/:id",
         name: "indivpost", 
         component: IndivPost,
+      },
+      {
+        path: "/indivpost/edit/:id",
+        name: "indivpostedit", 
+        component: CreatePost,
       }
     ]
   },

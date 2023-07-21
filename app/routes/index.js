@@ -60,10 +60,10 @@ router.post("/posts/add", async (req, res) => {
   post.post_id = req.body.post_id ?? Math.random().toString(36).substring(2, 9);
   post.post_title = req.body.post_title;
   post.subreddit = req.body.subreddit ?? "All";
-  post.post_url = req.body.post_url;
-  post.flair_text = req.body.flair_text;
+  post.post_url = req.body.post_url ?? "localhost:8000/#/indivpost/" + post.post_id;
+  post.flair_text = req.body.flair_text ?? "test";
   post.post_datetime = req.body.post_datetime ?? new Date().toISOString().slice(0, 19);
-  post.post_content = req.body.post_content;
+  post.post_content = req.body.post_content ?? "";
   
   await post.save();
   res.json(post);

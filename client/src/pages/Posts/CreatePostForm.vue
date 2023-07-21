@@ -39,16 +39,7 @@
           </div>
         </div>
         <div class="text-right">
-          <router-link
-          :to="{ path: '/indivpost/' + post_id }"
-          tag="p-button"
-          type="info"
-          id="create-post-button"
-          round
-          @click="onCreateClick()"
-        >
-          Post
-        </router-link>
+          <p-button type="info" round @click.native.prevent="onCreateClick(createdPostID)">Create Post</p-button>
         </div>
         <div class="clearfix"></div>
       </form>
@@ -61,6 +52,7 @@ import axios from 'axios';
 export default {
   data() {
     return {
+      createdPostID: null,
       post: {
         subreddit: '',
         post_title: '',
@@ -78,9 +70,11 @@ export default {
             }
         },
         addPost: function() {
-            // get new values from inputs and trim whitespace
-            var new_post_title = document.getElementById('post-title-input').value.trim();
 
+            // get new values from inputs and trim whitespace
+            var new_post_subreddit = document.getElementById('create-post-subreddit-input').value.trim();
+            var new_post_title = document.getElementById('create-post-title-input').value.trim();
+            var new_post_content = document.getElementById('create-post-content-input').value.trim();
             // call api to add post
             fetch('/posts/add', {
                     method: 'POST',
@@ -88,18 +82,20 @@ export default {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
+                        post_subreddit: new_post_subreddit,
                         post_title: new_post_title,
-                    })
+                        post_content: new_post_content,
+                        post_datetime: null
+                    }),
                 })
-                .then(response => response.json())
+                .then(response => response.json()
+                )
+                .then(data => {this.$router.push('/indivpost/' + data.post_id)})
+                // .then(this.$router.push('/indivpost/' + createdPostID))
                 .catch(error => {
                     console.log(error);
                 });
-
-            // call api to get new posts and update table
-            this.reloadTable(this.current_page);
-
-            this.clearInputs();
+            
         },
         updatePost: function (id) {
             // get new values from inputs

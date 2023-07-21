@@ -34,7 +34,7 @@
       return {
         items: [],
         pageCount: 20,
-        current_page: 1,
+        current_page: 0,
       }
     },
     mounted () {
@@ -42,15 +42,41 @@
     },
     methods: {
       onPaginationClick: function (pageNum) {
+            pageNum = pageNum - 1;
             console.log(pageNum);
-            this.reloadTable(pageNum);
-            this.clearInputs();
+            this.reloadPosts(pageNum);
             
             this.current_id = null;
             this.current_page = pageNum;
 
         },
+        sortPosts: function() {
+          fetch('/posts').then(response => response.json())
+          .then(data => {
+            this.items = data.posts;
+
+                    this.items.sort((a, b) => {
+                    const dateA = new Date(a.post_datetime);
+                    const dateB = new Date(b.post_datetime);
+
+                      // Compare years
+                      const yearComparison = dateB.getFullYear() - dateA.getFullYear();
+                      if (yearComparison !== 0) {
+                          return yearComparison;
+                      }
+
+                      // Compare months
+                      const monthComparison = dateB.getMonth() - dateA.getMonth();
+                      if (monthComparison !== 0) {
+                          return monthComparison;
+                      }
+                    return dateB - dateA;
+          })
+        })
+
+        },
         reloadPosts: function (page) {
+            this.sortPosts();
             fetch('/posts/' + page)
                 .then(response => response.json())
                 .then(data => {
@@ -58,12 +84,6 @@
                     // remove _v from tableData
                     this.items.forEach(item => delete item.__v);
                     this.pageCount = data.num_pages;
-
-                    this.items.sort((a, b) => {
-                    const dateA = new Date(a.post_datetime);
-                    const dateB = new Date(b.post_datetime);
-                    return dateB - dateA;
-                  });
                 })
                 .catch(error => {
                     console.log(error);
