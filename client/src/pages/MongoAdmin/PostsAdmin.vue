@@ -36,7 +36,7 @@
                     <tr v-for="(item, index) in tableData" :key="index">
                         <td v-for="(value, index) in item" :key="index">{{ value }}</td>
                         <td>
-                            <tr><button v-on:click="onEditClick(item.post_id)">Edit</button></tr>
+                            <tr><button c>Edit</button></tr>
                             <tr><button v-on:click="onDeleteClick(item.post_id)">Delete</button></tr>
                         </td>
                     </tr>

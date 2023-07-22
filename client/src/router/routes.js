@@ -9,6 +9,7 @@ import Login from "@/pages/Login.vue"
 import Register from "@/pages/Register.vue"
 import IndivPost from "@/pages/IndivPost.vue";
 import CreatePost from "@/pages/CreatePost.vue";
+import EditPost from "@/pages/EditPost.vue";
 
 // Admin pages
 import Dashboard from "@/pages/Dashboard.vue";
@@ -63,7 +64,7 @@ const routes = [
       {
         path: "/indivpost/edit/:id",
         name: "indivpostedit", 
-        component: CreatePost,
+        component: EditPost,
       }
     ]
   },

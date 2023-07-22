@@ -1,6 +1,14 @@
 <template>
-    <div style="padding: 50px 200px">
-      <card v-if="post" class="card-user" style="margin-top: 40px; padding: 20px 20px 0px 20px;">
+    <div class="container-fluid" style="padding: 50px 200px">
+      <card v-if="post" class="card-user" style="display: flex; margin-top: 40px; padding: 20px 20px 0px 20px;">
+        <drop-down v-if="true" no-caret
+            style="list-style: none; display: inline-block; right: 35px; position: absolute"
+            icon="ti-more-alt"
+            class="nav-item ml-auto"
+          >
+            <a class="dropdown-item" style="margin-right: 60px;" v-on:click.prevent="editPost(post.post_id)" href="/">Edit Post</a>
+            <a class="dropdown-item" style="margin-right: 60px" v-on:click.prevent="deletePost(post.post_id)" href="/">Delete Post</a>
+          </drop-down>
         <div class="row" style="margin-left: 20px; transform: scale(0.70); margin-left: calc((0.5 - 1) * 390px); margin-top: calc((0.5 - 1) * 100px); margin-bottom: calc((0.5 - 1) * 120px);">
             <img
             class="avatar border-white"
@@ -15,6 +23,7 @@
             </a>
             <small id="post-datetime">{{ post.post_datetime }}</small>
           </h4>
+          
         </div>
           <h4 class="title" id="post-title">
             {{ post.post_title }}
@@ -53,7 +62,6 @@
 </template>
 <script>
   import axios from "axios";
-  import IndivPostCard from "./Posts/IndivPostCard.vue";
   import Comments from "./Posts/Comments.vue";
   export default {
   data() {
@@ -74,6 +82,23 @@
         console.error('Error fetching post data:', error);
       }
     },
+    editPost: function(id) {
+      this.$router.push('/indivpost/edit/' + id)
+    },
+    deletePost: function (id) {
+            console.log(id);
+            if (confirm('Are you sure you want to delete this post?')) {
+                // call api to delete post
+                fetch('/posts/delete/' + id, {method: 'POST'})
+                    .then(response => response.json())
+                    .catch(error => {
+                        console.log(error);
+                    });
+
+                // call api to get new posts and update table
+                this.$router.push('/')
+            }
+        },
   },
 };
   </script>
