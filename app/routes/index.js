@@ -43,7 +43,8 @@ router.post("/users/login", async (req, res) => {
 
     // Run the query
     var rows = await conn.query("SELECT * FROM users WHERE user_name = ? AND user_password_hash = ?", [username, password]);
-
+    console.log(rows);
+    
     // Return the results
     if (rows.length > 0) {
       // Login successful

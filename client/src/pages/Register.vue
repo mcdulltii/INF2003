@@ -4,18 +4,6 @@
       <div>
         <form @submit.prevent="registerUser">
           <div class="row">
-            <div class="col-md-12">
-              <fg-input
-                type="text"
-                label="Email"
-                placeholder="Email"
-                v-model="user.email"
-              >
-              </fg-input>
-            </div>
-          </div>
-
-          <div class="row">
             <div class="col-md-20">
               <fg-input
                 type="text"
@@ -25,6 +13,8 @@
               >
               </fg-input>
             </div>
+          </div>
+          <div class="row">
             <div class="col-md-20">
               <fg-input
                 type="password"
@@ -35,17 +25,22 @@
               </fg-input>
             </div>
           </div>
+          <div class="row">
+            <div class="col-md-20">
+              <fg-input
+                type="password"
+                label="Confirm Password"
+                placeholder="Confirm Password"
+                v-model="confirmPassword"
+              >
+              </fg-input>
+            </div>
+          </div>
           <div class="text-center">
             <p-button type="info" round @click.native.prevent="registerUser">
               Register
             </p-button>
-            <p style="padding-top: 20px"> OR </p>
-            <p-button type="info" style="background-color: crimson; border:none" round @click.native.prevent="updateProfile">
-              Continue with google
-            </p-button> <br>
-            <p-button type="info" style="background-color: powderblue; border:none; margin: 10px;" round @click.native.prevent="updateProfile">
-              Continue with twitter
-            </p-button>
+            <span class="spacer"></span>
             <router-link :to="{ path: '/login' }">
               <p style="text-decoration: underline;"> Already on Bludit? Log in </p>
             </router-link>
@@ -65,12 +60,30 @@ export default {
         email: '',
         username: '',
         password: '',
+        cfmpassword: '',
       },
       error: '',
     };
   },
   methods: {
     async registerUser() {
+
+      // Perform client-side validation
+      if (
+        !this.user.email ||
+        !this.user.username ||
+        !this.user.password ||
+        this.user.password.length < 8
+      ) {
+        this.error = 'Please fill in all fields and ensure the password is between 8';
+        return;
+      }
+
+      if (this.user.password !== this.confirmPassword) {
+        this.error = 'Passwords do not match.';
+        return;
+      }
+
       try {
         const response = await fetch('/users/signup', {
           method: 'POST',
@@ -104,4 +117,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.spacer {
+  margin: 0 10px;
+}
+</style>
