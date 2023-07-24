@@ -71,19 +71,14 @@ export default {
   },
   methods: {
     registerUser() {
-      console.log('registerUser');
       // get new values from inputs and trim whitespace
-      console.log(this.user);
-      console.log("check")
       var new_username = this.user.username.trim();
       var new_password = this.user.password.trim();
       var confirm_password = this.user.confirmPassword.trim();
-      console.log(this.user.confirmPassword)
       if (new_password != confirm_password) {
         this.error = 'Passwords do not match';
         return;
       }
-      console.log('help');
       // call api to add post
       fetch('/users/signup', {
         method: 'POST',
@@ -95,15 +90,24 @@ export default {
           password: new_password,
         }),
       })
-        .then(response => response.json())
-        .then(() => {
-          console.log('wack');
+      .then(response => {
+        if (response.status == 200) {
+          return response.json();
+        } else {
+          this.error = 'Failed to register user';
+          return -1;
+        }
+      })
+      .then(response => {
+        if (response == -1)
+          this.$router.push('');
+        else
           // Redirect to the login page after successful registration
           this.$router.push('/login');
-        })
-        .catch(error => {
-          console.log(error);
-        });
+      })
+      .catch(error => {
+        console.log(error);
+      });
     },
   },
 };
