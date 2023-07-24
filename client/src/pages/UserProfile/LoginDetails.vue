@@ -27,9 +27,9 @@
             </div>
           </div>
           <div class="text-center">
-            <p-button type="info" round @click.native.prevent="login()">
+            <button type="submit" round @click.native.prevent="login">
               Login
-            </p-button>
+            </button>
             <p style="padding-top: 20px"></p>
             <label>{{error}}</label>
             <router-link :to="{ path: '/register' }">
@@ -44,7 +44,8 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from 'axios';
+
 export default {
   data() {
     return {
@@ -55,51 +56,32 @@ export default {
     };
   },
   methods: {
-
-    validate: function()
-    {
-        if (this.username == '')
-        {
-            this.error = 'Please enter your username.';
-            return false;
-        }
-        if (this.password == '')
-        {
-            this.error = 'Please enter your password.';
-            return false;
-        }
-        this.valid = true;
-    },
-
-    login : function(){
-      this.validate();
-      if(this.valid = false)
-      {
-        return;
-      }
+    login: function() {
       console.log('wank');
       axios
-      .post('/users/login', {
-                      username: this.username,
-                      password: this.password,
-                })
-              .then(response => response.json()
-                )
-              .then((response) => {
-                // Login successful
-                this.success = 'Success!';
-                // Redirect to the home page
-                this.$router.push('/');
-                const message = `<div style="font-size: 18px; color: #007bff;">Welcome back, <span style="font-weight: bold;">${this.username}</span></div>`;
-                alert(message);
-              })
-              .catch(error => {
-                  console.log(error);
-                  this.error = error.response.data.error || 'Login failed.';
-              });
-                
-        },
-      }
-    }
+        .post('/users/login', {
+          username: this.username,
+          password: this.password,
+        })
+        .then((response) => {
+          if (response.status == 200) {
+            // Login successful
+            this.success = 'Success!';
+            // Redirect to the home page
+            this.$router.push('/');
+            alert("Welcome back," + this.username);
+          } else {
+            this.error = 'Username or Password do not match';
+            return;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          this.error = 'Login failed.';
+          return;
+        });
+    },
+  },
+};
 </script>
 <style></style>

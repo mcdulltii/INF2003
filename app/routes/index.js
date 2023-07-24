@@ -40,6 +40,7 @@ router.post("/users/login", async (req, res) => {
   try {
     // Make a connection to MariaDB
     conn = await getConnection();
+    console.log(conn);
 
     // Run the query
     var rows = await conn.query("SELECT * FROM users WHERE user_name = ? AND user_password_hash = ?", [username, password]);
@@ -47,10 +48,12 @@ router.post("/users/login", async (req, res) => {
     
     // Return the results
     if (rows.length > 0) {
+      console.log(res);
       // Login successful
       res.status(200).json({ success: true });
     } else {
       // Login failed
+      console.log(res);
       res.status(401).json({ error: 'Invalid username or password.' });
     }
   } catch (err) {

@@ -34,13 +34,13 @@
                 label="Confirm Password"
                 placeholder="Confirm Password"
                 id="confirm-password"
-                v-model="confirmPassword"
+                v-model="user.confirmPassword"
               >
               </fg-input>
             </div>
           </div>
           <div class="text-center">
-            <button type="info" round @click="registerUser()">
+            <button type="submit" round @click="registerUser">
               Register
             </button>
             <p style="padding-top: 20px"></p>
@@ -73,15 +73,17 @@ export default {
     registerUser() {
       console.log('registerUser');
       // get new values from inputs and trim whitespace
+      console.log(this.user);
+      console.log("check")
       var new_username = this.user.username.trim();
       var new_password = this.user.password.trim();
       var confirm_password = this.user.confirmPassword.trim();
-
-      if (new_password !== confirm_password) {
+      console.log(this.user.confirmPassword)
+      if (new_password != confirm_password) {
         this.error = 'Passwords do not match';
         return;
       }
-
+      console.log('help');
       // call api to add post
       fetch('/users/signup', {
         method: 'POST',
@@ -97,7 +99,7 @@ export default {
         .then(() => {
           console.log('wack');
           // Redirect to the login page after successful registration
-          this.$router.push('/users/login');
+          this.$router.push('/login');
         })
         .catch(error => {
           console.log(error);
