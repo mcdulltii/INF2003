@@ -64,7 +64,7 @@ router.post("/posts/add", async (req, res) => {
   post.flair_text = req.body.flair_text ?? "test";
   post.post_datetime = req.body.post_datetime ?? new Date().toISOString().slice(0, 19);
   post.post_content = req.body.post_content ?? "";
-  
+
   await post.save();
   res.json(post);
 });
@@ -98,7 +98,7 @@ router.get("/posts/search/:key/:value/:page", async (req, res) => {
   var query = {};
   query[req.params.key] = { $regex: req.params.value, $options: "i" };
   var posts = await Post.find(query).skip(req.params.page * page_offset).limit(page_offset);
-  
+
   // get number of pages
   var num_posts = await Post.countDocuments(query);
   var num_pages = Math.ceil(num_posts / page_offset);
@@ -112,7 +112,7 @@ router.get("/posts/search/:key/:value/:page", async (req, res) => {
 // Route to update a post in MongoDB
 router.post("/posts/update/:post_id", async (req, res) => {
   var post = await Post.findOne({ post_id: req.params.post_id });
-  
+
   // Only update the fields that were passed in
   post.post_title = req.body.post_title ?? post.post_title;
   post.subreddit = req.body.subreddit ?? post.subreddit;
@@ -120,7 +120,7 @@ router.post("/posts/update/:post_id", async (req, res) => {
   post.flair_text = req.body.flair_text ?? post.flair_text;
   post.post_datetime = req.body.post_datetime ?? post.post_datetime;
   post.post_content = req.body.post_content ?? post.post_content;
-  
+
   await post.save();
   res.json(post);
 });
@@ -182,10 +182,10 @@ router.get("/comments/search/:key/:value/:page", async (req, res) => {
 // Route to update a comment in MongoDB
 router.post("/comments/update/:_id", async (req, res) => {
   var comment = await Comment.findOne({ _id: req.params._id });
-  
+
   // Only update the fields that were passed in
   comment.comment_message = req.body.comment_message ?? comment.comment_message;
-  
+
   await comment.save();
   res.json(comment);
 });
