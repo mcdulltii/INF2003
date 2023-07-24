@@ -32,8 +32,9 @@
         {{ post.post_content }}
       </p>
       <div slot="image">
+        <div id="post-content" v-html="postContent"></div>
       <!-- <img src="@/assets/img/background.jpg" alt="..." /> -->
-    </div>
+      </div>
     </div>
     <hr />
     <div class="text-center">
@@ -98,6 +99,9 @@ methods: {
     try {
       const response = await axios.get('/posts/get/' + this.$route.params.id);
       this.post = response.data[0]; // Assuming the response is an array, you can modify this based on your server response
+
+      console.log(this.post.post_url); 
+      this.loadPostContent();
     } catch (error) {
       console.error('Error fetching post data:', error);
     }
@@ -143,6 +147,17 @@ methods: {
                   console.log(error);
               });
       },
+      loadPostContent: function() {
+      // if post_url is an image link set postContent to an image tag with the url as the src
+      if (this.post.post_url.match(/\.(jpeg|jpg|gif|png)$/) != null) {
+        this.postContent = "<img src='" + this.post.post_url + "'></img>";
+      }
+      // else postContent will be a link to the post
+      else {
+        this.postContent = "<a href='" + this.post.post_url + "'>" + this.post.post_url + "</a>";
+      }
+      
+    }
 },
 components: {
     Comments
