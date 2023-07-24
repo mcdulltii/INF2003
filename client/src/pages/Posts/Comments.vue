@@ -8,7 +8,7 @@
       <a class="dropdown-item" style="margin-right: 60px;" v-on:click.prevent="enableEditMode">Edit Comment</a>
       <a class="dropdown-item" style="margin-right: 60px" v-on:click.prevent="deleteComment(comment._id)">Delete Comment</a>
     </drop-down>
-    <div class="user-info">
+    <div class="user-info" style="transform-origin: top left;">
       <img class="avatar border-white" src="@/assets/img/faces/face-2.jpg" alt="..." />
       <h4 class="title">u/hellouser1 <small>&nbsp;5 days ago</small></h4>
     </div>
