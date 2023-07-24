@@ -1,7 +1,19 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light" style="position: fixed; top: 0; width: 100%; z-index: 999">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/">{{ routeName }}</a>
+      <a class="navbar-brand" href="/"> BLUDIT </a>
+      <drop-down
+            class="navbar-brand"
+            title="Home"
+            title-classes="nav-link"
+            icon="ti-home"
+          >
+          <input type="text" id="filterBar" @click.stop v-model="filterQuery" placeholder="Filter...">
+          <a class="dropdown-item subreddit-option" href="#">r/funny</a>
+          <a class="dropdown-item subreddit-option" href="#">r/AskReddit</a>
+          <a class="dropdown-item subreddit-option" href="#">r/science</a>
+          <a class="dropdown-item subreddit-option" href="#">r/gaming</a>
+          </drop-down>
       <button
         class="navbar-toggler navbar-burger"
         type="button"
@@ -56,16 +68,32 @@
   </nav>
 </template>
 <script>
+
 export default {
   computed: {
     routeName() {
       const { name } = this.$route;
       return this.capitalizeFirstLetter(name);
     },
+    filteredItems() {
+    const query = this.filterQuery.toLowerCase();
+    return this.items.filter(item => item.toLowerCase().includes(query));
+    },
+    filteredSubreddits() {
+      const query = this.filterQuery.toLowerCase();
+      return this.popularSubreddits.filter(subreddit => subreddit.toLowerCase().includes(query));
+    },
   },
   data() {
     return {
       activeNotifications: false,
+      filterQuery: "",
+      popularSubreddits: [
+        "r/funny",
+        "r/AskReddit",
+        "r/science",
+        "r/gaming",
+      ],
     };
   },
   methods: {
@@ -87,4 +115,11 @@ export default {
   },
 };
 </script>
-<style></style>
+<style>
+#filterBar {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+</style>

@@ -7,7 +7,8 @@ var PostSchema = new mongoose.Schema({
   post_title: String,
   subreddit: String,
   post_url: String,
-  flair_text: String
+  flair_text: String,
+  post_content: String,
 });
 
 // Save schema as model

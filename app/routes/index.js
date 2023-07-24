@@ -60,9 +60,10 @@ router.post("/posts/add", async (req, res) => {
   post.post_id = req.body.post_id ?? Math.random().toString(36).substring(2, 9);
   post.post_title = req.body.post_title;
   post.subreddit = req.body.subreddit ?? "All";
-  post.post_url = req.body.post_url;
-  post.flair_text = req.body.flair_text;
+  post.post_url = req.body.post_url ?? "localhost:8000/#/indivpost/" + post.post_id;
+  post.flair_text = req.body.flair_text ?? "test";
   post.post_datetime = req.body.post_datetime ?? new Date().toISOString().slice(0, 19);
+  post.post_content = req.body.post_content ?? "";
   
   await post.save();
   res.json(post);
@@ -74,7 +75,7 @@ router.get("/posts/:current_page", async (req, res) => {
   var num_posts = await Post.countDocuments({});
   var num_pages = Math.ceil(num_posts / page_offset);
 
-  var posts = await Post.find({}).skip(req.params.current_page * page_offset).limit(page_offset);
+  var posts = await Post.find({}).sort({'post_datetime': -1}).skip(req.params.current_page * page_offset).limit(page_offset);
 
   res.json({
     num_pages: num_pages,
@@ -118,6 +119,7 @@ router.post("/posts/update/:post_id", async (req, res) => {
   post.post_url = req.body.post_url ?? post.post_url;
   post.flair_text = req.body.flair_text ?? post.flair_text;
   post.post_datetime = req.body.post_datetime ?? post.post_datetime;
+  post.post_content = req.body.post_content ?? post.post_content;
   
   await post.save();
   res.json(post);
