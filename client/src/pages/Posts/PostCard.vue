@@ -1,25 +1,24 @@
 <template>
   <card class="card-user" style="padding: 20px 20px 0px 20px;">
-      <div class="row" style="margin-left: 20px; transform: scale(0.70); margin-left: calc((0.5 - 1) * 390px); margin-top: calc((0.5 - 1) * 100px); margin-bottom: calc((0.5 - 1) * 120px);">
+      <div class="row" style="padding: 5px 10px;">
           <img
           class="avatar border-white"
           src="@/assets/img/faces/face-2.jpg"
           alt="..."
-          style="transform: scale(0.5); transform-origin: top left;"
         />
-        <h4 class="title" style="margin-left: calc((0.5 - 1) *30px);">
+        <h6>
           r/{{ subreddit }}
           <a href="#">
             <small>&#2022 Posted by: @chetfaker</small>
           </a>
           <small>&nbsp {{ post_datetime }}</small>
-        </h4>
+        </h6>
       </div>
         <h4 class="title">
           {{ post_title }}
         </h4>
-    <div style="padding: 20px 0px">
-      <p style="max-height: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+    <div>
+      <p style="margin-top: 10px; max-height: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
         {{ post_url }}
       </p>
       <div slot="image">

@@ -200,5 +200,26 @@ router.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
+// // Server-side route for fetching top 3 subreddits based on post count
+// app.get('/api/topSubreddits', (req, res) => {
+//   const searchQuery = req.query.searchQuery.toLowerCase();
+  
+//   // Example: Fetch top 3 subreddits with most posts from your database
+//   const topSubreddits = [
+//     { name: 'r/funny', postCount: 1000 },
+//     { name: 'r/AskReddit', postCount: 850 },
+//     { name: 'r/science', postCount: 750 },
+//     // ... Retrieve the subreddits from your database ...
+//   ];
+
+//   // Filter the subreddits based on the search query and sort by post count
+//   const filteredSubreddits = topSubreddits.filter(subreddit =>
+//     subreddit.name.toLowerCase().includes(searchQuery)
+//   ).sort((a, b) => b.postCount - a.postCount);
+
+//   // Send the top 3 subreddits as the API response
+//   res.json({ subreddits: filteredSubreddits.slice(0, 3) });
+// });
+
 module.exports = router;
 

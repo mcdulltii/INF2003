@@ -9,6 +9,7 @@
             icon="ti-home"
           >
           <input type="text" id="filterBar" @click.stop v-model="filterQuery" placeholder="Filter...">
+          <li class="dropdown-item"><a icon="ti-stats-up" href="/"></a><a icon="ti-bolt" href="/"></a></li>
           <a class="dropdown-item subreddit-option" href="#">r/funny</a>
           <a class="dropdown-item subreddit-option" href="#">r/AskReddit</a>
           <a class="dropdown-item subreddit-option" href="#">r/science</a>
@@ -79,9 +80,22 @@ export default {
     const query = this.filterQuery.toLowerCase();
     return this.items.filter(item => item.toLowerCase().includes(query));
     },
-    filteredSubreddits() {
+    // filteredSubreddits() {
+    //   const query = this.filterQuery.toLowerCase();
+    //   return this.popularSubreddits.filter(subreddit => subreddit.toLowerCase().includes(query));
+    // },
+    // Update filteredSubreddits to fetch top 3 subreddits based on post count
+    async filteredSubreddits() {
       const query = this.filterQuery.toLowerCase();
-      return this.popularSubreddits.filter(subreddit => subreddit.toLowerCase().includes(query));
+      try {
+        const response = await axios.get('/api/topSubreddits', {
+          params: { searchQuery: query },
+        });
+        return response.data.subreddits;
+      } catch (error) {
+        console.error('Error fetching top subreddits:', error);
+        return [];
+      }
     },
   },
   data() {

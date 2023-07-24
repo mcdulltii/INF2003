@@ -6,7 +6,7 @@
             class="avatar border-white"
             src="@/assets/img/faces/face-2.jpg"
             alt="..."
-            style="transform: scale(0.65);margin-top: calc((0.5 - 1) * 30px);margin-bottom: calc((0.5 - 1) * 20px);"
+            
           />
           <router-link :to="{ path: '/createpost' }">
             <textarea style="width: 150%">Create Post</textarea>

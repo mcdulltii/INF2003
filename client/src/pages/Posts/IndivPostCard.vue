@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid" style="padding: 50px 200px">
+  <div class="container-fluid" style="padding: 80px 200px">
     <card v-if="post" class="card-user" style="display: flex; margin-top: 40px; padding: 20px 20px 0px 20px;">
       <drop-down v-if="true" no-caret
           style="list-style: none; display: inline-block; right: 35px; position: absolute"
@@ -9,26 +9,25 @@
           <a class="dropdown-item" style="margin-right: 60px;" v-on:click.prevent="editPost(post.post_id)" href="/">Edit Post</a>
           <a class="dropdown-item" style="margin-right: 60px" v-on:click.prevent="deletePost(post.post_id)" href="/">Delete Post</a>
         </drop-down>
-      <div class="row" style="margin-left: 20px; transform: scale(0.70); margin-left: calc((0.5 - 1) * 390px); margin-top: calc((0.5 - 1) * 100px); margin-bottom: calc((0.5 - 1) * 120px);">
+      <div class="row">
           <img
           class="avatar border-white"
           src="@/assets/img/faces/face-2.jpg"
           alt="..."
-          style="transform: scale(0.5);"
         />
-        <h4 class="title" style="margin-left: calc((0.5 - 1) *30px);">
+        <h6>
           r/{{ post.subreddit }}
           <a href="#">
             <small>&#2022 Posted by: @chetfaker</small>
           </a>
           <small id="post-datetime">{{ post.post_datetime }}</small>
-        </h4>
+        </h6>
         
       </div>
         <h4 class="title" id="post-title">
           {{ post.post_title }}
         </h4>
-    <div >
+    <div style="margin-top: 15px">
       <p>
         {{ post.post_content }}
       </p>
@@ -58,6 +57,17 @@
     </div>
   </card>
   <p> Comments: </p>
+  <card class="card-user" style="display: flex; flex-direction: column;">
+    <small> Comment as u/helloUser1 </small>
+    <div style="flex: 1;">
+      <textarea v-model="newComment" rows="2" placeholder="What are your thoughts?"></textarea>
+      <div class="text-right">
+      <button style="right: 20px; bottom: 18px; position: absolute" @click="saveChanges">Post</button>
+    </div>
+    </div>
+    <hr />
+    
+  </card>
   <div v-for="comment in comments" :key="comment._id">
     <Comments :comment="comment"></Comments>
   </div>
@@ -72,6 +82,7 @@ data() {
     comments: [],
     post: null,
     id: this.$route.params.id,
+    newComment: "",
   };
 },
 created() {
@@ -97,6 +108,9 @@ methods: {
     } catch (error) {
       console.error('Error fetching comments data:', error);
     }
+  },
+  saveChanges: function() {
+
   },
   editPost: function(id) {
     this.$router.push('/indivpost/edit/' + id)
