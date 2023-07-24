@@ -50,33 +50,7 @@
             this.current_page = pageNum;
 
         },
-        sortPosts: function() {
-          fetch('/posts').then(response => response.json())
-          .then(data => {
-            this.items = data.posts;
-
-                    this.items.sort((a, b) => {
-                    const dateA = new Date(a.post_datetime);
-                    const dateB = new Date(b.post_datetime);
-
-                      // Compare years
-                      const yearComparison = dateB.getFullYear() - dateA.getFullYear();
-                      if (yearComparison !== 0) {
-                          return yearComparison;
-                      }
-
-                      // Compare months
-                      const monthComparison = dateB.getMonth() - dateA.getMonth();
-                      if (monthComparison !== 0) {
-                          return monthComparison;
-                      }
-                    return dateB - dateA;
-          })
-        })
-
-        },
         reloadPosts: function (page) {
-            this.sortPosts();
             fetch('/posts/' + page)
                 .then(response => response.json())
                 .then(data => {

@@ -75,7 +75,7 @@ router.get("/posts/:current_page", async (req, res) => {
   var num_posts = await Post.countDocuments({});
   var num_pages = Math.ceil(num_posts / page_offset);
 
-  var posts = await Post.find({}).skip(req.params.current_page * page_offset).limit(page_offset);
+  var posts = await Post.find({}).sort({'post_datetime': -1}).skip(req.params.current_page * page_offset).limit(page_offset);
 
   res.json({
     num_pages: num_pages,

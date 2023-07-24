@@ -33,7 +33,7 @@
           {{ post.post_content }}
         </p>
         <div slot="image">
-        <img src="@/assets/img/background.jpg" alt="..." />
+        <!-- <img src="@/assets/img/background.jpg" alt="..." /> -->
       </div>
       </div>
       <hr />
@@ -57,7 +57,10 @@
         </div>
       </div>
     </card>
-        <Comments></Comments>
+    <p> Comments: </p>
+    <div v-for="comment in comments" :key="comment._id">
+      <Comments :comment="comment"></Comments>
+    </div>
     </div>
 </template>
 <script>
@@ -66,13 +69,18 @@
   export default {
   data() {
     return {
+      comments: [],
       post: null,
       id: this.$route.params.id,
     };
   },
   created() {
-    this.fetchPostData();
+    this.fetchPostData(); // Fetch individual post data
+    this.fetchCommentsData(); // Fetch comments data
   },
+  // mounted () {
+  //     this.reloadComments();
+  //   },
   methods: {
     async fetchPostData() {
       try {
@@ -80,6 +88,14 @@
         this.post = response.data[0]; // Assuming the response is an array, you can modify this based on your server response
       } catch (error) {
         console.error('Error fetching post data:', error);
+      }
+    },
+    async fetchCommentsData() {
+      try {
+        const response = await axios.get('/comments/get/' + this.$route.params.id);
+        this.comments = response.data; // Assuming the response is an object with a 'comments' property containing the comments array
+      } catch (error) {
+        console.error('Error fetching comments data:', error);
       }
     },
     editPost: function(id) {
@@ -99,6 +115,21 @@
                 this.$router.push('/')
             }
         },
+        reloadComments: function () {
+            fetch('/comments/get/' + this.$route.params.id)
+                .then(response => response.json())
+                .then(data => {
+                    this.comments = data.comments;
+                    // remove _v from tableData
+                    // this.comments.forEach(item => delete item.__v);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        },
   },
+  components: {
+      Comments
+    },
 };
   </script>
