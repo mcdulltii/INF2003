@@ -32,7 +32,7 @@
         <h5>
             Comments
             <br />
-            <small>57</small>
+            <small>{{ total_comments }}</small>
           </h5>
           <h5>
             Share
@@ -49,8 +49,17 @@
   </card>
 </template>
 <script>
+import axios from "axios";
 export default {
-  props: ['post_title', 'subreddit', 'post_url', 'post_datetime'],
+  props: ['post_id', 'post_title', 'subreddit', 'post_url', 'post_datetime'],
+  data() {
+    return {
+      total_comments: 0,
+    }
+  },
+  created() {
+    this.fetchCommentsLength();
+  },
   methods: {
     getClasses(index) {
       var remainder = index % 3;
@@ -60,6 +69,14 @@ export default {
         return "col-lg-4";
       } else {
         return "col-lg-3";
+      }
+    },
+    async fetchCommentsLength() {
+      try {
+        const response = await axios.get('/comments/get/' + this.post_id);
+        this.total_comments = response.data.length;
+      } catch (error) {
+        console.error('Error fetching comments data:', error);
       }
     },
   },

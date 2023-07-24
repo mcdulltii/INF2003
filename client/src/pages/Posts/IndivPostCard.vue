@@ -23,7 +23,7 @@
           </a>
           <small id="post-datetime">{{ post.post_datetime }}</small>
         </h4>
-        
+
       </div>
         <h4 class="title" id="post-title">
           {{ post.post_title }}
@@ -42,7 +42,7 @@
         <h5>
             Comments
             <br />
-            <small>57</small>
+            <small>{{ total_comments }}</small>
           </h5>
           <h5>
             Share
@@ -70,6 +70,7 @@ export default {
 data() {
   return {
     comments: [],
+    total_comments: 0,
     post: null,
     id: this.$route.params.id,
   };
@@ -94,6 +95,7 @@ methods: {
     try {
       const response = await axios.get('/comments/get/' + this.$route.params.id);
       this.comments = response.data; // Assuming the response is an object with a 'comments' property containing the comments array
+      this.total_comments = this.comments.length;
     } catch (error) {
       console.error('Error fetching comments data:', error);
     }
