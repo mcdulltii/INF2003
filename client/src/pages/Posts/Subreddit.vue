@@ -1,5 +1,12 @@
 <template>
   <div>
+    <card class="card-user" style="padding: 20px 20px 0px 20px;">
+
+        <h4 class="title">
+          r/{{ subreddit }}
+        </h4>
+    <hr />
+  </card>
       <card style="height: 60px; margin-bottom:25px">
           <div class="row" style="margin-left: 30%">
             <img

@@ -2,18 +2,18 @@
   <nav class="navbar navbar-expand-lg navbar-light" style="position: fixed; top: 0; width: 100%; z-index: 999">
     <div class="container-fluid">
       <a class="navbar-brand" href="/"> BLUDIT </a>
-      <drop-down
-            class="navbar-brand"
-            title="Home"
-            title-classes="nav-link"
-            icon="ti-home"
-          >
-          <input type="text" id="filterBar" @click.stop v-model="filterQuery" placeholder="Filter...">
-          <a class="dropdown-item subreddit-option" href="#">r/funny</a>
-          <a class="dropdown-item subreddit-option" href="#">r/AskReddit</a>
-          <a class="dropdown-item subreddit-option" href="#">r/science</a>
-          <a class="dropdown-item subreddit-option" href="#">r/gaming</a>
-          </drop-down>
+      <drop-down v-if="$route.path === '/'"
+        class="navbar-brand"
+        title="Home"
+        title-classes="nav-link"
+        icon="ti-home"
+      >
+        <input type="text" id="filterBar" @input="updateFilteredSubreddits" v-model="filterQuery" placeholder="Filter...">
+        <!-- Display the filteredSubreddits based on user input -->
+        <a v-for="subreddit in filteredSubreddits" :key="subreddit" class="dropdown-item subreddit-option" href="#">
+          {{ subreddit }}
+        </a>
+      </drop-down>
       <button
         class="navbar-toggler navbar-burger"
         type="button"
@@ -67,9 +67,34 @@ export default {
     const query = this.filterQuery.toLowerCase();
     return this.items.filter(item => item.toLowerCase().includes(query));
     },
-    filteredSubreddits() {
+    // filteredSubreddits() {
+    //   const query = this.filterQuery.toLowerCase();
+    //   return this.popularSubreddits.filter(subreddit => subreddit.toLowerCase().includes(query));
+    // },
+    async updateFilteredSubreddits() {
       const query = this.filterQuery.toLowerCase();
-      return this.popularSubreddits.filter(subreddit => subreddit.toLowerCase().includes(query));
+      try {
+        const response = await axios.get('/api/topSubreddits', {
+          params: { searchQuery: query },
+        });
+        this.filteredSubreddits = response.data.subreddits;
+      } catch (error) {
+        console.error('Error fetching top subreddits:', error);
+        this.filteredSubreddits = [];
+      }
+    },
+    // Update filteredSubreddits to fetch top 3 subreddits based on post count
+    async filteredSubreddits() {
+      const query = this.filterQuery.toLowerCase();
+      try {
+        const response = await axios.get('/api/topSubreddits', {
+          params: { searchQuery: query },
+        });
+        return response.data.subreddits;
+      } catch (error) {
+        console.error('Error fetching top subreddits:', error);
+        return [];
+      }
     },
   },
   data() {

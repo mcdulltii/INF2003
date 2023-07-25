@@ -1,14 +1,29 @@
 .card {
   border-radius: $border-radius-extreme;
   box-shadow: 0 2px 2px rgba(204, 197, 185, 0.5);
-  background-color: #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.8);
   color: $card-black-color;
   margin-bottom: 20px;
   position: relative;
   z-index: 1;
   border: none;
 
+
   .card-image {
+    width: 100%;
+    overflow: hidden;
+    // height: 260px;
+    border-radius: $border-radius-extreme $border-radius-extreme 0 0;
+    position: relative;
+    -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+
+    img {
+      width: 100%;
+    }
+  }
+  .card-image-preview {
     width: 100%;
     overflow: hidden;
     height: 260px;
@@ -21,6 +36,7 @@
     img {
       width: 100%;
     }
+    
   }
   .card-body {
     padding: 15px 15px 10px 15px;
@@ -61,8 +77,15 @@
     font-weight: $font-weight-light;
   }
   .avatar {
-    width: 50px;
-    height: 50px;
+    width: 36px;
+    height: 36px;
+    overflow: hidden;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+  .avatar-comments {
+    width: 30px;
+    height: 30px;
     overflow: hidden;
     border-radius: 50%;
     margin-right: 5px;
@@ -187,8 +210,8 @@
     }
   }
   .avatar {
-    width: 100px;
-    height: 100px;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
     position: relative;
     margin-bottom: 15px;
@@ -207,9 +230,9 @@
   .description {
     margin-top: 10px;
   }
-  .card-body {
-    min-height: 200px;
-  }
+  // .card-body {
+  //   min-height: 200px;
+  // }
 
   &.card-plain {
     .avatar {
