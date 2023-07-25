@@ -2,15 +2,15 @@
   <div style="width: 50%; margin: auto">
     <card class="card" title="Login" style="align-items: center; margin-top: 20%; padding: auto"> 
       <div>
-        <form @submit.prevent>
+        <form @submit.prevent="login">
           <div class="row">
             <div class="col-md-20">
               <fg-input
                 type="text"
                 label="Username"
                 placeholder="Username"
-                v-model="user.username"
-              >
+                v-model="username"
+              required>
               </fg-input>
             </div>
           </div>
@@ -18,52 +18,87 @@
           <div class="row">
             <div class="col-md-20">
               <fg-input
-                type="text"
+                type="password"
                 label="Password"
                 placeholder="Password"
-                v-model="user.password"
-              >
+                v-model="password"
+              required>
               </fg-input>
             </div>
           </div>
           <div class="text-center">
-            <p-button type="info" round @click.native.prevent="updateProfile">
-              Sign in
-            </p-button>
-            <p style="padding-top: 20px"> OR </p>
-            <p-button type="info" style="background-color: crimson; border:none" round @click.native.prevent="updateProfile">
-              Continue with google
-            </p-button> <br>
-            <p-button type="info" style="background-color: powderblue; border:none; margin: 10px;" round @click.native.prevent="updateProfile">
-              Continue with twitter
-            </p-button>
+            <button type="submit" round>
+              Login
+            </button>
+            <p style="padding-top: 20px"></p>
+            <label>{{error}}</label>
             <router-link :to="{ path: '/register' }">
               <p style="text-decoration: underline;"> New to Bludit? Register now</p>
-          </router-link>
+            </router-link>
           </div>
           <div class="clearfix"> </div>
         </form>
-        
       </div>
     </card>
   </div>
-  </template>
-  <script>
-  export default {
-    data() {
-      return {
-        user: {
-          username: "michael23",
-          password: "",
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      username: '',
+      password: '',
+      error: '',
+      success: '',
+    };
+  },
+  methods: {
+    login() {
+      // get new values from inputs and trim whitespace
+      var login_username = this.username.trim();
+      var login_password = this.password.trim();
+      // call api to add post
+      fetch('/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
         },
-      };
+        body: JSON.stringify({
+          username: login_username,
+          password: login_password,
+        }),
+      })
+      .then(response => {
+        if (response.status == 200) {
+          return response.json();
+        } else {
+          this.error = 'Username or Password do not match';
+          return -1;
+        }
+      })
+      .then(response => {
+        if (response == -1)
+          this.$router.push('');
+        else
+          // Redirect to the home page after successful login
+          this.$router.push('/');
+      })
+      .then(data => {
+            // Assuming the response contains 'user_id' as a string (VARCHAR)
+            const user_id = data.user_id;
+            // Do whatever you need to do with the user_id, e.g., save it in Vuex store or local storage
+            LocalStorage.set('user_id', user_id);
+            console.log('User ' + user_id + ' logged in.');
+            // Redirect to the home page after successful login
+            this.$router.push('/');    
+        })
+
+      .catch(error => {
+        console.log(error);
+      });
     },
-    methods: {
-      updateProfile() {
-        alert("Your data: " + JSON.stringify(this.user));
-      },
-    },
-  };
-  </script>
-  <style></style>
-  
+  },
+}
+</script>
+<style></style>

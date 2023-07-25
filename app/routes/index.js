@@ -1,6 +1,7 @@
-const getConnection = require("../app");
+const db = require("../app");
 const express = require('express');
 const mongoose = require("mongoose");
+const crypto = require('crypto');
 
 // ExpressJS routing
 const router = express.Router();
@@ -12,45 +13,110 @@ var Comment = mongoose.model('Comment');
 // Default variables
 const page_offset = 10;
 
-async function runSQLQuery(query) {
-  let conn;
-  try {
-    // Make a connection to MariaDB
-    conn = await getConnection();
-
-    // Run the query
-    var rows = await conn.query(query);
-
-    // Return the results
-    return rows;
-  } catch (err) {
-    return err;
-  } finally {
-    if (conn) conn.release();
-  }
-}
-
-// Create a route to get all users from MySQL
-router.get("/users", (req, res) => {
-  res.json(runSQLQuery("SELECT * FROM users"));
+// Create a route to create a new user in SQL
+router.post("/users/signup", async (req, res) => {
+  const { username, password } = req.body;
+  db.getConnection((err, conn) => {
+    if (err) {
+      console.log("Not connected due to error: " + err);
+      res.status(401).json(err);
+    } else {
+      console.log("Connected! Connection id is " + conn.threadId);
+      // Run the query
+      conn.query("INSERT INTO users(user_id, user_name, user_password_hash, is_admin) VALUES (?, ?, ?, ?)", [crypto.randomUUID(), username, password, 0], (err, results) => {
+        if (err) {
+          console.log("Failed to insert into users table: " + err);
+          res.status(401).json(err);
+        } else {
+          // Return the results
+          res.status(200).json({ success: true });
+        }
+        conn.end();
+      });
+    }
+  });
 });
 
-// Create a route to get all forums from MySQL
-router.get("/forums", (req, res) => {
-  res.json(runSQLQuery("SELECT * FROM forums"));
+// Create a route to authenticate a user in SQL
+router.post("/users/login", async (req, res) => {
+  const { username, password } = req.body;
+  console.log
+  db.getConnection((err, conn) => {
+    if (err) {
+      console.log("Not connected due to error: " + err);
+      res.status(401).json(err);
+    } else {
+      console.log("Connected! Connection id is " + conn.threadId);
+      // Run the query
+      conn.query("SELECT * FROM users WHERE user_name = ? AND user_password_hash = ?", [username, password], (err, results) => {
+        if (err) {
+          console.log("Failed to select from users table: " + err);
+          res.status(401).json(err);
+        } else {
+          // Return the results
+          if (results.length > 0) {
+            // Login successful
+            res.status(200).json({ success: true});
+          } else {
+            // Login failed
+            res.status(401).json({ error: 'Invalid username or password.' });
+          }
+        }
+        conn.end();
+      });
+    }
+  });
 });
 
-// Create a route to get all posts from MySQL
-router.get("/posts", (req, res) => {
-  res.json(runSQLQuery("SELECT * FROM posts"));
+// Create a route to update a user in SQL
+router.put("/users/update/:id", async (req, res) => {
+  const { id } = req.params;
+  const { username, password } = req.body;
+  db.getConnection((err, conn) => {
+    if (err) {
+      console.log("Not connected due to error: " + err);
+      res.status(401).json(err);
+    } else {
+      console.log("Connected! Connection id is " + conn.threadId);
+      // Run the query
+      conn.query("UPDATE users SET user_name = ?, user_password_hash = ? WHERE user_id = ?", [username, password, id], (err, results) => {
+        if (err) {
+          console.log("Failed to update users table: " + err);
+          res.status(401).json(err);
+        } else {
+          // Return the results
+          res.status(200).json({ success: true });
+        }
+        conn.end();
+      });
+    }
+  });
 });
 
-// Create a route to get all votes from MySQL
-router.get("/votes", (req, res) => {
-  res.json(runSQLQuery("SELECT * FROM votes"));
+
+// Create a route to delete a user from SQL
+router.delete("/users/delete/:id", async (req, res) => {
+  const { id } = req.params;
+  db.getConnection((err, conn) => {
+    if (err) {
+      console.log("Not connected due to error: " + err);
+      res.status(401).json(err);
+    } else {
+      console.log("Connected! Connection id is " + conn.threadId);
+      // Run the query
+      conn.query("DELETE FROM users WHERE user_id =  ?", [id], (err, results) => {
+        if (err) {
+          console.log("Failed to delete from users table: " + err);
+          res.status(401).json(err);
+        } else {
+          // Return the results
+          res.status(200).json({ success: true });
+        }
+        conn.end();
+      });
+    }
+  });
 });
-
-
 
 // Route to add a post to MongoDB
 router.post("/posts/add", async (req, res) => {
