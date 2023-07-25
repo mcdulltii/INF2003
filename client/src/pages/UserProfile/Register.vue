@@ -40,7 +40,7 @@
             </div>
           </div>
           <div class="text-center">
-            <button type="submit" round @click="registerUser">
+            <button type="submit">
               Register
             </button>
             <p style="padding-top: 20px"></p>

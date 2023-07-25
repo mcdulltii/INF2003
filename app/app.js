@@ -1,5 +1,5 @@
 const express = require("express");
-const mariadb = require("mariadb");
+const mariadb = require("mariadb/callback");
 const mongoose = require("mongoose");
 
 const createError = require("http-errors");
@@ -27,12 +27,19 @@ app.use(express.static(path.join(__dirname, '../client/dist')));
 // app.locals.basedir = path.join(__dirname, "views");
 
 // Exposing creating new SQL connections
-module.exports = mariadb.createConnection({
+const pool = mariadb.createPool({
   host: "mariadb",
   user: "user",
   password: "password",
   database: "mysql_db",
+  connectionLimit: 10,
 });
+
+module.exports = {
+  getConnection: (callback) => {
+    return pool.getConnection(callback);
+  } 
+}
 
 // Create a new mongoose connection
 mongoose.connect('mongodb://user:password@mongodb:27017/mongo_db');
