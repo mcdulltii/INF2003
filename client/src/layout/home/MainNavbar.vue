@@ -24,13 +24,19 @@
               <p>Login/Register</p>
             </a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item" v-show="loggedIn">
             <drop-down v-if="true"
             class="nav-item"
             title="Username"
             title-classes="nav-link"
             icon="ti-face-smile"
           >
+          <li class="nav-item" v-show="loggedIn">
+            <a v-if="true" class="nav-link" @click="logout">
+              <i class="ti-face-smile"></i>
+              <p>Logout</p>
+            </a>
+          </li>
             <a class="dropdown-item" style="margin-right: 60px;" href="#/userprofile">Profile</a>
             <a class="dropdown-item" style="margin-right: 60px" href="#/usersettings">User Settings</a>
           </drop-down>
@@ -92,6 +98,12 @@ export default {
     //   }
     // },
   },
+  created() {
+    // Retrieve the 'loggedIn' value from local storage during component initialization
+    this.loggedIn = localStorage.getItem('loggedIn');
+    console.log(this.loggedIn);
+    console.log(loggedIn);
+  },
   methods: {
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
@@ -113,6 +125,13 @@ export default {
       // alert("function is called");
       eventBus.$emit('posts-sorted-by-comments');
     },
+    logout() {
+    localStorage.removeItem('user_id');
+    // Update the loggedIn data property to false
+    this.loggedIn = false;
+    // Redirect the user to the login page or any other desired page
+    this.$router.push('/');
+  },
   },
 };
 </script>

@@ -57,7 +57,9 @@ router.post("/users/login", async (req, res) => {
           // Return the results
           if (results.length > 0) {
             // Login successful
-            res.status(200).json({ success: true});
+            const user_id = results[0].user_id;
+            console.log("User ID: " + user_id);
+            res.status(200).json({ success: true, user_id: user_id.toString()});
           } else {
             // Login failed
             res.status(401).json({ error: 'Invalid username or password.' });
