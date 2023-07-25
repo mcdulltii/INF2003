@@ -19,11 +19,12 @@
         </h4>
     <div>
       <p style="margin-top: 10px; max-height: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-        {{ post_url }}
+        {{ post_content }}
       </p>
-      <div slot="image">
+      <div slot="image" class="card-image">
+        <div id="post-content-home" v-html="postContentHome"></div>
       <!-- <img src="@/assets/img/background.jpg" alt="..." /> -->
-    </div>
+      </div>
     </div>
     <hr />
     <div class="text-center">
@@ -54,12 +55,36 @@ export default {
   data() {
     return {
       total_comments: 0,
+      post: null,
     }
   },
   created() {
+    this.fetchPostData(); // Fetch individual post data
     this.fetchCommentsLength();
   },
   methods: {
+    async fetchPostData() {
+    try {
+      const response = await axios.get('/posts/get/' + this.$route.params.id);
+      this.post = response.data[0]; // Assuming the response is an array, you can modify this based on your server response
+
+      console.log(this.post.post_url); 
+      this.loadPostContent();
+    } catch (error) {
+      console.error('Error fetching post data:', error);
+    }
+  },
+  loadPostContent: function() {
+      // if post_url is an image link set postContent to an image tag with the url as the src
+      if (this.post.post_url.match(/\.(jpeg|jpg|gif|png)$/) != null) {
+        this.postContentHome = "<img src='" + this.post.post_url + "'></img>";
+      }
+      // else postContent will be a link to the post
+      else {
+        this.postContentHome = "<a href='" + this.post.post_url + "'>" + this.post.post_url + "</a>";
+      }
+      
+    },
     getClasses(index) {
       var remainder = index % 3;
       if (remainder === 0) {

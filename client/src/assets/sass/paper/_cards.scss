@@ -12,6 +12,20 @@
   .card-image {
     width: 100%;
     overflow: hidden;
+    // height: 260px;
+    border-radius: $border-radius-extreme $border-radius-extreme 0 0;
+    position: relative;
+    -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+
+    img {
+      width: 100%;
+    }
+  }
+  .card-image-preview {
+    width: 100%;
+    overflow: hidden;
     height: 260px;
     border-radius: $border-radius-extreme $border-radius-extreme 0 0;
     position: relative;
@@ -22,6 +36,7 @@
     img {
       width: 100%;
     }
+    
   }
   .card-body {
     padding: 15px 15px 10px 15px;

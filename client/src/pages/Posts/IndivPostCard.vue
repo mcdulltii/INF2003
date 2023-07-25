@@ -31,7 +31,7 @@
       <p>
         {{ post.post_content }}
       </p>
-      <div slot="image">
+      <div slot="image" class="card-image">
         <div id="post-content" v-html="postContent"></div>
       <!-- <img src="@/assets/img/background.jpg" alt="..." /> -->
       </div>
