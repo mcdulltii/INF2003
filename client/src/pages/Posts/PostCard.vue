@@ -7,7 +7,7 @@
           alt="..."
         />
         <h6>
-          r/{{ subreddit }}
+          b/{{ subreddit }}
           <a href="#">
             <small>&#2022 Posted by: @chetfaker</small>
           </a>

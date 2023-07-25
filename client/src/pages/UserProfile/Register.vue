@@ -40,9 +40,9 @@
             </div>
           </div>
           <div class="text-center">
-            <button type="submit">
+            <p-button type="info">
               Register
-            </button>
+            </p-button>
             <p style="padding-top: 20px"></p>
             <p v-if="error" class="error">{{ error }}</p>
             <router-link :to="{ path: '/login' }">
