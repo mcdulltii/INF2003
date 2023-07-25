@@ -40,6 +40,7 @@ router.post("/users/signup", async (req, res) => {
 // Create a route to authenticate a user in SQL
 router.post("/users/login", async (req, res) => {
   const { username, password } = req.body;
+  console.log
   db.getConnection((err, conn) => {
     if (err) {
       console.log("Not connected due to error: " + err);
@@ -55,7 +56,9 @@ router.post("/users/login", async (req, res) => {
           // Return the results
           if (results.length > 0) {
             // Login successful
-            res.status(200).json({ success: true });
+            const user_id = results[0].user_id;
+            res.status(200).json({ success: true, user_id: user_id.toString()});
+            console.log("User " + user_id + " logged in.");
           } else {
             // Login failed
             res.status(401).json({ error: 'Invalid username or password.' });
@@ -91,6 +94,7 @@ router.put("/users/update/:id", async (req, res) => {
     }
   });
 });
+
 
 // Create a route to delete a user from SQL
 router.delete("/users/delete/:id", async (req, res) => {

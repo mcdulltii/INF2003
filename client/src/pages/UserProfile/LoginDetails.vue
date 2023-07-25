@@ -51,6 +51,7 @@ export default {
       password: '',
       error: '',
       success: '',
+      loggedIn: false,
     };
   },
   methods: {
@@ -83,7 +84,19 @@ export default {
         else
           // Redirect to the home page after successful login
           this.$router.push('/');
+          this.$emit('loggedIn', true);
+          console.log(loggedIn);
       })
+      .then(data => {
+            // Assuming the response contains 'user_id' as a string (VARCHAR)
+            const user_id = data.user_id;
+            // Do whatever you need to do with the user_id, e.g., save it in Vuex store or local storage
+            LocalStorage.set('user_id', user_id);
+            console.log('User ' + user_id + ' logged in.');
+            // Redirect to the home page after successful login
+            this.$router.push('/');    
+        })
+
       .catch(error => {
         console.log(error);
       });
