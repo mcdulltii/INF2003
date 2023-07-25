@@ -6,4 +6,4 @@ RUN chmod +x /wait-for-it.sh
 WORKDIR /mongo-import
 ADD . .
 RUN sed -i -e 's/\r$//' mongo_import.sh
-ENTRYPOINT ["/wait-for-it.sh", "mongodb:27017", "-t", "30", "--", "./mongo_import.sh"]
+ENTRYPOINT ["/wait-for-it.sh", "mongodb:4444", "-t", "80", "--", "./mongo_import.sh"]
