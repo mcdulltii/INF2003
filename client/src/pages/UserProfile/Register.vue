@@ -1,78 +1,117 @@
 <template>
-    <div style="width: 50%; margin: auto">
-      <card class="card" title="Register" style="align-items: center; margin-top: 20%; padding: auto"> 
-        <div>
-          <form @submit.prevent>
-            <div class="row">
-              <div class="col-md-12">
-                <fg-input
-                  type="text"
-                  label="Email"
-                  placeholder="Email"
-                  v-model="user.username"
-                >
-                </fg-input>
-              </div>
+  <div style="width: 50%; margin: auto">
+    <card class="card" title="Register" style="align-items: center; margin-top: 20%; padding: auto"> 
+      <div>
+        <form @submit.prevent="registerUser">
+          <div class="row">
+            <div class="col-md-20">
+              <fg-input
+                type="text"
+                label="Username"
+                placeholder="Username"
+                id="create-username"
+                v-model="user.username"
+              >
+              </fg-input>
             </div>
-    
-            <div class="row">
-                <div class="col-md-20">
-                <fg-input
-                  type="text"
-                  label="Username"
-                  placeholder="Username"
-                  v-model="user.username"
-                >
-                </fg-input>
-              </div>
-              <div class="col-md-20">
-                <fg-input
-                  type="text"
-                  label="Password"
-                  placeholder="Password"
-                  v-model="user.password"
-                >
-                </fg-input>
-              </div>
+          </div>
+          <div class="row">
+            <div class="col-md-20">
+              <fg-input
+                type="password"
+                label="Password"
+                placeholder="Password"
+                id="create-password"
+                v-model="user.password"
+              >
+              </fg-input>
             </div>
-            <div class="text-center">
-              <p-button type="info" round @click.native.prevent="updateProfile">
-                Sign in
-              </p-button>
-              <p style="padding-top: 20px"> OR </p>
-              <p-button type="info" style="background-color: crimson; border:none" round @click.native.prevent="updateProfile">
-                Continue with google
-              </p-button> <br>
-              <p-button type="info" style="background-color: powderblue; border:none; margin: 10px;" round @click.native.prevent="updateProfile">
-                Continue with twitter
-              </p-button>
-              <router-link :to="{ path: '/login' }">
-                <p style="text-decoration: underline;"> Already on Bludit? Log in </p>
+          </div>
+          <div class="row">
+            <div class="col-md-20">
+              <fg-input
+                type="password"
+                label="Confirm Password"
+                placeholder="Confirm Password"
+                id="confirm-password"
+                v-model="user.confirmPassword"
+              >
+              </fg-input>
+            </div>
+          </div>
+          <div class="text-center">
+            <button type="submit">
+              Register
+            </button>
+            <p style="padding-top: 20px"></p>
+            <p v-if="error" class="error">{{ error }}</p>
+            <router-link :to="{ path: '/login' }">
+              <p style="text-decoration: underline;"> Already on Bludit? Log in </p>
             </router-link>
-            </div>
-            <div class="clearfix"> </div>
-          </form>
-          
-        </div>
-      </card>
-    </div>
-    </template>
-    <script>
-    export default {
-      data() {
-        return {
-          user: {
-            username: "michael23",
-            password: "",
-          },
-        };
+          </div>
+          <div class="clearfix"> </div>
+        </form>
+      </div>
+    </card>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      user: {
+        email: '',
+        username: '',
+        password: '',
+        confirmPassword: '',
       },
-      methods: {
-        updateProfile() {
-          alert("Your data: " + JSON.stringify(this.user));
-        },
-      },
+      error: '',
     };
-    </script>
-    <style></style>
-    
+  },
+  methods: {
+    registerUser() {
+      // get new values from inputs and trim whitespace
+      var new_username = this.user.username.trim();
+      var new_password = this.user.password.trim();
+      var confirm_password = this.user.confirmPassword.trim();
+      if (new_password != confirm_password) {
+        this.error = 'Passwords do not match';
+        return;
+      }
+      // call api to add post
+      fetch('/users/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: new_username,
+          password: new_password,
+        }),
+      })
+      .then(response => {
+        if (response.status == 200) {
+          return response.json();
+        } else {
+          this.error = 'Failed to register user';
+          return -1;
+        }
+      })
+      .then(response => {
+        if (response == -1)
+          this.$router.push('');
+        else
+          // Redirect to the login page after successful registration
+          this.$router.push('/login');
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    },
+  },
+};
+</script>
+
+<style>
+</style>
