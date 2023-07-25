@@ -1,117 +1,79 @@
 <template>
-    <div>
-      <!-- Add a container for the header image and subreddit name -->
-      <div class="header-container">
-        <img
-          class="header-image"
-          src="@/assets/img/subreddit_headers/tech_subreddit.jpg" 
-          alt="Subreddit Header"
-        />
-        <div class="subreddit-name">{{ subredditName }}</div>
-      </div>
-  
-      <card style="height: 60px; margin-bottom: 25px">
-        <div class="row" style="margin-left: 30%">
-          <img
+  <div>
+    <card class="card-user" style="padding: 20px 20px 0px 20px;">
+
+        <h4 class="title">
+          r/{{ subreddit }}
+        </h4>
+    <hr />
+  </card>
+      <card style="height: 60px; margin-bottom:25px">
+          <div class="row" style="margin-left: 30%">
+            <img
             class="avatar border-white"
             src="@/assets/img/faces/face-2.jpg"
             alt="..."
-            style="transform: scale(0.65);margin-top: calc((0.5 - 1) * 30px);margin-bottom: calc((0.5 - 1) * 20px);"
+            
           />
           <router-link :to="{ path: '/createpost' }">
             <textarea style="width: 150%">Create Post</textarea>
           </router-link>
-        </div>
-      </card>
-  
-      <!-- Rest of your code remains unchanged -->
-      <router-link
-        v-for="item in items"
-        :to="{ path: '/indivpost/' + item.post_id }"
-        :key="item.post_id"
-      >
+          </div>
+        </card>
+        <router-link v-for="item in items" :to="{ path: '/indivpost/' + item.post_id }" :key="item.post_id">
         <Post-Card v-bind="item"></Post-Card>
-      </router-link>
-      <div class="pagination-wrapper">
-        <paginate
-          :page-count="pageCount"
-          :click-handler="onPaginationClick"
-          :prev-text="'Prev'"
-          :next-text="'Next'"
-          :container-class="'pagination'"
-        >
-        </paginate>
-      </div>
+        </router-link>
+        <div class="pagination-wrapper">
+            <paginate :page-count="pageCount" :click-handler="onPaginationClick" :prev-text="'Prev'" :next-text="'Next'"
+                :container-class="'pagination'">
+            </paginate>
+        </div>
     </div>
-  </template>
-  
-  <script>
+</template>
+<script>
   import Paginate from 'vuejs-paginate';
   import '@/assets/css/mongo-admin.css';
   import '@/assets/css/pagination.css';
   import axios from 'axios';
-  import PostCard from './Posts/PostCard.vue';
-  
+  import PostCard from "./Posts/PostCard.vue";
   export default {
-    data() {
+    data () {
       return {
         items: [],
         pageCount: 20,
         current_page: 0,
-        subredditName: 'Your Subreddit Name', // Replace with the actual name of your subreddit
-      };
+      }
     },
-    mounted() {
+    mounted () {
       this.reloadPosts(this.current_page);
     },
     methods: {
       onPaginationClick: function (pageNum) {
-        pageNum = pageNum - 1;
-        console.log(pageNum);
-        this.reloadPosts(pageNum);
-  
-        this.current_id = null;
-        this.current_page = pageNum;
-      },
-      reloadPosts: function (page) {
-        fetch('/posts/' + page)
-          .then((response) => response.json())
-          .then((data) => {
-            this.items = data.posts;
-            // remove _v from tableData
-            this.items.forEach((item) => delete item.__v);
-            this.pageCount = data.num_pages;
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      },
+            pageNum = pageNum - 1;
+            console.log(pageNum);
+            this.reloadPosts(pageNum);
+            
+            this.current_id = null;
+            this.current_page = pageNum;
+
+        },
+        reloadPosts: function (page) {
+            fetch('/posts/' + page)
+                .then(response => response.json())
+                .then(data => {
+                    this.items = data.posts;
+                    // remove _v from tableData
+                    this.items.forEach(item => delete item.__v);
+                    this.pageCount = data.num_pages;
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        },
     },
     components: {
       PostCard,
-      Paginate,
+      Paginate
     },
   };
   </script>
-  
-  <style>
-  /* Add CSS styles for the header image and subreddit name */
-  .header-container {
-    position: relative;
-  }
-  
-  .header-image {
-    width: 100%;
-    height: 200px; /* Adjust the height as needed */
-  }
-  
-  .subreddit-name {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
-  }
-  </style>
-  

@@ -1,12 +1,13 @@
 .card {
   border-radius: $border-radius-extreme;
   box-shadow: 0 2px 2px rgba(204, 197, 185, 0.5);
-  background-color: #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.8);
   color: $card-black-color;
   margin-bottom: 20px;
   position: relative;
   z-index: 1;
   border: none;
+
 
   .card-image {
     width: 100%;
@@ -61,8 +62,8 @@
     font-weight: $font-weight-light;
   }
   .avatar {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     overflow: hidden;
     border-radius: 50%;
     margin-right: 5px;

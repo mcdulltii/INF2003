@@ -10,9 +10,9 @@
     </drop-down>
     <div class="user-info">
       <img class="avatar-comments border-white" src="@/assets/img/faces/face-2.jpg" alt="..." />
-      <h6 class="title">u/hellouser1 <small>&nbsp;5 days ago</small></h6>
+      <h5 class="title">u/hellouser1 <small>&nbsp;5 days ago</small></h5>
     </div>
-    <div>
+    <div style="margin-left: 18px">
       <p>{{ comment.comment_message }}</p>
     </div>
     <hr />
@@ -21,14 +21,14 @@
   <card class="card-user" v-else>
     <div class="user-info">
       <img class="avatar-comments border-white" src="@/assets/img/faces/face-2.jpg" alt="..." />
-      <h6 class="title">u/hellouser1 <small>&nbsp;5 days ago</small></h6>
+      <h5 class="title">u/hellouser1 <small>&nbsp;5 days ago</small></h5>
     </div>
     <div>
       <textarea v-model="editedComment" rows="3"></textarea>
     </div>
     <hr />
     <div class="text-center">
-      <button @click="saveChanges">Save Changes</button>
+      <button @click="saveChanges(commment.post_id)">Save Changes</button>
       <button @click="cancelEdit">Cancel</button>
     </div>
   </card>
@@ -53,9 +53,9 @@ export default {
       current_page: 0,
     };
   },
-  mounted() {
-    this.reloadComments(this.current_page);
-  },
+  // mounted() {
+  //   this.reloadComments(this.current_page);
+  // },
   methods: {
     enableEditMode() {
       this.editMode = true;
@@ -152,7 +152,7 @@ export default {
 .user-info {
   display: flex;
   align-items: left;
-  margin: 10px;
+  /* margin: 10px; */
 }
 
 /* .avatar {

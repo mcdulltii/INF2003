@@ -2,7 +2,7 @@
   <nav class="navbar navbar-expand-lg navbar-light" style="position: fixed; top: 0; width: 100%; z-index: 999">
     <div class="container-fluid">
       <a class="navbar-brand" href="/"> BLUDIT </a>
-      <drop-down
+      <drop-down v-if="$route.path === '/'"
             class="navbar-brand"
             title="Home"
             title-classes="nav-link"
