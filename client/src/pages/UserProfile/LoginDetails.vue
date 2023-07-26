@@ -55,10 +55,18 @@ export default {
     };
   },
   methods: {
-    login() {
+    async login() {
       // get new values from inputs and trim whitespace
       var login_username = this.username.trim();
       var login_password = this.password.trim();
+      const encoder = new TextEncoder();
+      const encodedData = encoder.encode(login_password);
+      const hash = await crypto.subtle.digest('SHA-256', encodedData);
+      const hashArray = Array.from(new Uint8Array(hash));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      var hash_password = hashHex;
+      console.log("my login hash:" + hash_password);
+
       // call api to add post
       fetch('/users/login', {
         method: 'POST',
@@ -67,7 +75,7 @@ export default {
         },
         body: JSON.stringify({
           username: login_username,
-          password: login_password,
+          password: hash_password,
         }),
       })
       .then(response => {
@@ -81,23 +89,16 @@ export default {
       .then(response => {
         if (response == -1)
           this.$router.push('');
-        else
+        else {
           // Redirect to the home page after successful login
           this.loggedIn = true;
+          const user_id = response.user_id;
+          const username = response.user_name;
+          console.log("my user_id:" + user_id);
+          localStorage.setItem('user_id', user_id);
           localStorage.setItem('loggedIn', this.loggedIn);
           this.$router.push('/');
-      })
-      .then(data => {
-            // Assuming the response contains 'user_id' as a string (VARCHAR)
-            //var user_id = CryptoJS.SHA256(data.user_id);
-            const user_id = data.user_id;
-            console.log('Normal User ID' + data.user_id);
-            // Do whatever you need to do with the user_id, e.g., save it in Vuex store or local storage
-            localStorage.setItem('user_id', user_id);
-            // Redirect to the home page after successful login
-            this.$router.push('/');    
-        })
-
+    }})
       .catch(error => {
         console.log(error);
       });
