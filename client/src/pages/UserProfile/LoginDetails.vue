@@ -96,6 +96,7 @@ export default {
           const username = response.user_name;
           console.log("my user_id:" + user_id);
           localStorage.setItem('user_id', user_id);
+          localStorage.setItem('username', username);
           localStorage.setItem('loggedIn', this.loggedIn);
           this.$router.push('/');
     }})
