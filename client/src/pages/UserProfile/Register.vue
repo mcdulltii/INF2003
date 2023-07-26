@@ -2,7 +2,7 @@
   <div style="width: 50%; margin: auto">
     <card class="card" title="Register" style="align-items: center; margin-top: 20%; padding: auto"> 
       <div>
-        <form @submit.prevent="registerUser">
+        <form @submit.prevent>
           <div class="row">
             <div class="col-md-20">
               <fg-input
@@ -40,7 +40,7 @@
             </div>
           </div>
           <div class="text-center">
-            <p-button type="info">
+            <p-button type="info" round @click.native.prevent="registerUser">
               Register
             </p-button>
             <p style="padding-top: 20px"></p>
