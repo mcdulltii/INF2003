@@ -9,6 +9,7 @@ const router = express.Router();
 // Models
 var Post = mongoose.model('Post');
 var Comment = mongoose.model('Comment');
+var Subbludit = mongoose.model('Subbludit');
 
 // Default variables
 const page_offset = 10;
@@ -260,6 +261,63 @@ router.post("/comments/update/:_id", async (req, res) => {
 router.post("/comments/delete/:_id", async (req, res) => {
   var comment = await Comment.findOneAndRemove({ _id: req.params._id });
   res.json(comment);
+
+
+// filter related functions are from here onwards, MongoDB
+
+// API route to get posts sorted by the number of comments
+router.get("/posts/sorted-by-comments", async (req, res) => {
+  try {
+    // Use the aggregation framework to sort posts by the number of comments
+    const sortedPosts = await Post.aggregate([
+      {
+        $lookup: {
+          from: "comments", // Replace 'comments' with the actual name of the comments collection
+          localField: "post_id",
+          foreignField: "post_id",
+          as: "comments",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          post_id: 1,
+          post_datetime: 1,
+          post_title: 1,
+          subreddit: 1,
+          post_url: 1,
+          flair_text: 1,
+          post_content: 1,
+          num_comments: { $size: "$comments" }, // Add a new field 'num_comments' representing the number of comments
+        },
+      },
+      { $sort: { num_comments: -1 } }, // Sort by 'num_comments' in descending order (-1)
+    ]);
+
+    res.json(sortedPosts);
+  } catch (error) {
+    console.error("Error retrieving sorted posts:", error);
+    res.status(500).json({ error: "Failed to retrieve sorted posts" });
+  }
+});
+
+  // Route to search for subbludits based on the search query
+router.get('/subbludits/search', async (req, res) => {
+  try {
+    const searchQuery = req.query.q; // Get the search query from the request query parameter
+
+    // Use a regular expression to perform a case-insensitive search for subbludit names
+    const foundSubbludits = await Subbludit.find({
+      name: { $regex: new RegExp(searchQuery, 'i') },
+    }).select('name');
+
+    res.json(foundSubbludits);
+  } catch (error) {
+    console.error('Error searching subbludits:', error);
+    res.status(500).json({ error: 'Failed to search subbludits' });
+  }
+});
+
 });
 
 router.get('*', (req, res) => {

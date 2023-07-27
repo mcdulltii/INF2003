@@ -20,7 +20,8 @@
     "vue-clickaway": "2.2.2",
     "vue-notifyjs": "0.3.0",
     "vue-router": "3.0.1",
-    "vuejs-paginate": "^2.1.0"
+    "vuejs-paginate": "^2.1.0",
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "3.12.1",

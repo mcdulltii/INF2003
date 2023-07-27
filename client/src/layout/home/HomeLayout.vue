@@ -2,7 +2,7 @@
   <div class="wrapper">
     <div class="content">
       
-      <top-navbar></top-navbar>
+      <top-navbar @posts-sorted-by-comments="updateSortedPosts"></top-navbar>
       <div style="padding: 100px 250px">
       <home-content> </home-content>
       </div>
@@ -26,11 +26,24 @@ body {
 import TopNavbar from "./MainNavbar.vue";
 import ContentFooter from "../dashboard/ContentFooter.vue";
 import HomeContent from "./Content.vue";
+import eventBus from '../../services/eventBus.js';
 export default {
+  data() {
+    return {
+      sortedPosts: [],
+    }
+  },
   components: {
     TopNavbar,
     ContentFooter,
     HomeContent
+  },
+
+  watch: {
+    sortedPosts(newSortedPosts) {
+      // Emit the custom event when sortedPosts is updated
+      this.$emit('sorted-posts-updated', newSortedPosts);
+    },
   },
   methods: {
     toggleSidebar() {
@@ -38,6 +51,7 @@ export default {
         this.$sidebar.displaySidebar(false);
       }
     },
+
   },
 };
 </script>

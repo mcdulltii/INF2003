@@ -29,15 +29,29 @@
   import '@/assets/css/pagination.css';
   import axios from 'axios';
   import PostCard from "./Posts/PostCard.vue";
+  // relevant to search/filter functions, pls import this
+  import { eventBus } from '../services/eventBus';
   export default {
     data () {
       return {
         items: [],
         pageCount: 20,
         current_page: 0,
+        sortedPosts: {
+          type: Array,
+          required: true,
+        },
       }
     },
+    // relevant to search/filter functions
+    beforeDestroy() {
+    // this.$parent.$off('sorted-posts-updated', this.onSortedPostsUpdated);
+    eventBus.$off('posts-sorted-by-comments', this.sortPostsByPopularity);
+    },
     mounted () {
+      // relevant to search/filter functions
+      eventBus.$on('posts-sorted-by-comments', this.sortPostsByPopularity);
+
       this.reloadPosts(this.current_page);
     },
     methods: {
@@ -63,6 +77,22 @@
                     console.log(error);
                 });
         },
+
+        // relevant to search/filter functions
+    sortPostsByPopularity() {
+      // alert("Function from Home.vue is called");
+
+      axios
+        .get('/posts/sorted-by-comments')
+        .then((response) => {
+          // Emit a custom event to the parent component (home page)
+          this.items = response.data;
+        })
+        .catch((error) => {
+          console.error('Error retrieving sorted posts:', error);
+          // Handle the error here if needed
+        });
+    }
     },
     components: {
       PostCard,

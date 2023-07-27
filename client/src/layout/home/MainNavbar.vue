@@ -8,31 +8,16 @@
         title-classes="nav-link"
         icon="ti-home"
       >
-        <input type="text" id="filterBar" @input="updateFilteredSubreddits" v-model="filterQuery" placeholder="Filter...">
+        <input type="text" id="filterBar" @input="updateFilteredSubreddits" v-model="filterQuery" @click.stop placeholder="Filter...">
+        <!-- relevant to search/filter functions, click event to trigger filter is here -->
+        <a class="dropdown-item icon-container" @click="getPostsSortedByComments" style="padding: 10px 45px 10px 15px;" href="#"><span class="ti-stats-up"></span></a>
         <!-- Display the filteredSubreddits based on user input -->
-        <a v-for="subreddit in filteredSubreddits" :key="subreddit" class="dropdown-item subreddit-option" href="#">
-          {{ subreddit }}
+        <a v-for="subbludit in filteredSubbludits" :key="subbludit" class="dropdown-item subreddit-option" href="#">
+          b/ {{ subbludit.name }}
         </a>
       </drop-down>
-      <button
-        class="navbar-toggler navbar-burger"
-        type="button"
-        @click="toggleSidebar"
-        :aria-expanded="$sidebar.showSidebar"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-bar"></span>
-        <span class="navbar-toggler-bar"></span>
-        <span class="navbar-toggler-bar"></span>
-      </button>
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav ml-auto">
-          <!-- <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="ti-panel"></i>
-              <p>Stats</p>
-            </a>
-          </li> -->
           <li class="nav-item">
             <a v-if="true" href="#/login" class="nav-link">
               <i class="ti-face-smile"></i>
@@ -56,8 +41,22 @@
   </nav>
 </template>
 <script>
+import axios from 'axios';
+import { eventBus } from '../../services/eventBus.js';
 
 export default {
+  data() {
+    return {
+      activeNotifications: false,
+      filterQuery: "",
+      // default options
+      filteredSubbludits: [
+        { _id: '1', name: 'art' },
+        { _id: '2', name: 'artificial' },
+        { _id: '3', name: 'datascience' },
+      ],
+    };
+  },
   computed: {
     routeName() {
       const { name } = this.$route;
@@ -67,10 +66,6 @@ export default {
     const query = this.filterQuery.toLowerCase();
     return this.items.filter(item => item.toLowerCase().includes(query));
     },
-    // filteredSubreddits() {
-    //   const query = this.filterQuery.toLowerCase();
-    //   return this.popularSubreddits.filter(subreddit => subreddit.toLowerCase().includes(query));
-    // },
     async updateFilteredSubreddits() {
       const query = this.filterQuery.toLowerCase();
       try {
@@ -97,18 +92,6 @@ export default {
       }
     },
   },
-  data() {
-    return {
-      activeNotifications: false,
-      filterQuery: "",
-      popularSubreddits: [
-        "r/funny",
-        "r/AskReddit",
-        "r/science",
-        "r/gaming",
-      ],
-    };
-  },
   methods: {
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
@@ -124,6 +107,11 @@ export default {
     },
     hideSidebar() {
       this.$sidebar.displaySidebar(false);
+    },
+    // relevant to search/filter functions
+    getPostsSortedByComments() {
+      // alert("function is called");
+      eventBus.$emit('posts-sorted-by-comments');
     },
   },
 };
