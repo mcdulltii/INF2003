@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
   app-server:
-    container_name: app-server
     build: .
+    container_name: app-server
     restart: always
     profiles: ['server', 'all']
     ports:
@@ -19,35 +19,20 @@ services:
       - app_network
 
   mariadb:
-    container_name: mariadb
-    image: mariadb
+    image: bitnami/mariadb-galera:latest
     restart: always
     profiles: ['server', 'all']
     environment:
+      - ALLOW_EMPTY_PASSWORD=yes
       - MARIADB_DATABASE=mysql_db
-      - MARIADB_ROOT_PASSWORD=password
       - MARIADB_USER=user
       - MARIADB_PASSWORD=password
     volumes:
-      # - ./mysql-data:/var/lib/mysql
-      - ./docker/mysql-init.sql:/docker-entrypoint-initdb.d/mysql-init.sql:ro
+      - ./docker/mysql-init.sql:/docker-entrypoint-startdb.d/mysql-init.sql:ro
       - ./docker/mysql-import:/mysql-import
-    networks:
-      - app_network
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
-    restart: always
-    profiles: ['all']
-    environment:
-      PMA_HOST: mariadb
-      PMA_PORT: 3306
-      PMA_ARBITRARY: 1
-    ports:
-      - 127.0.0.1:8080:80
-    depends_on:
-      - mariadb
+    deploy:
+      mode: replicated
+      replicas: 3
     networks:
       - app_network
 
@@ -131,6 +116,22 @@ services:
     profiles: ['server', 'all']
     depends_on:
       - mongodb
+    networks:
+      - app_network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    profiles: ['all']
+    environment:
+      PMA_HOST: mariadb
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    ports:
+      - 127.0.0.1:8080:80
+    depends_on:
+      - mariadb
     networks:
       - app_network
 
