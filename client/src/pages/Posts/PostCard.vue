@@ -9,7 +9,7 @@
         <h6>
           b/{{ subreddit }}
           <a href="#">
-            <small>&#2022 Posted by: @chetfaker</small>
+            <small>&#2022 Posted by: @{{user_name}}</small>
           </a>
           <small>&nbsp {{ post_datetime }}</small>
         </h6>
@@ -56,6 +56,7 @@ export default {
     return {
       total_comments: 0,
       post: null,
+      user_name: localStorage.getItem('username'),
     }
   },
   created() {

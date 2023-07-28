@@ -1,28 +1,18 @@
 <template>
   <div style="width: 50%; margin: auto">
-    <card class="card" title="Login" style="align-items: center; margin-top: 20%; padding: auto"> 
+    <card class="card" title="Login" style="align-items: center; margin-top: 20%; padding: auto">
       <div>
         <form @submit.prevent>
           <div class="row">
             <div class="col-md-20">
-              <fg-input
-                type="text"
-                label="Username"
-                placeholder="Username"
-                v-model="username"
-              required>
+              <fg-input type="text" label="Username" placeholder="Username" v-model="username" required>
               </fg-input>
             </div>
           </div>
-  
+
           <div class="row">
             <div class="col-md-20">
-              <fg-input
-                type="password"
-                label="Password"
-                placeholder="Password"
-                v-model="password"
-              required>
+              <fg-input type="password" label="Password" placeholder="Password" v-model="password" required>
               </fg-input>
             </div>
           </div>
@@ -31,7 +21,7 @@
               Login
             </p-button>
             <p style="padding-top: 20px"></p>
-            <label>{{error}}</label>
+            <label>{{ error }}</label>
             <router-link :to="{ path: '/register' }">
               <p style="text-decoration: underline;"> New to Bludit? Register now</p>
             </router-link>
@@ -56,6 +46,7 @@ export default {
   },
   methods: {
     async login() {
+
       // get new values from inputs and trim whitespace
       var login_username = this.username.trim();
       var login_password = this.password.trim();
@@ -78,32 +69,37 @@ export default {
           password: hash_password,
         }),
       })
-      .then(response => {
-        if (response.status == 200) {
-          return response.json();
-        } else {
-          this.error = 'Username or Password do not match';
-          return -1;
-        }
-      })
-      .then(response => {
-        if (response == -1)
-          this.$router.push('');
-        else {
-          // Redirect to the home page after successful login
-          this.loggedIn = true;
-          const user_id = response.user_id;
-          const username = response.user_name;
-          console.log("my user_id:" + user_id);
-          localStorage.setItem('user_id', user_id);
-          localStorage.setItem('username', username);
-          localStorage.setItem('loggedIn', this.loggedIn);
-          this.$router.push('/');
-    }})
-      .catch(error => {
-        console.log(error);
-      });
+        .then(response => {
+          if (response.status == 200) {
+            return response.json();
+          } else {
+            this.error = 'Username or Password do not match';
+            return -1;
+          }
+        })
+        .then(async response => {
+          if (response == -1)
+            this.$router.push('');
+          else {
+            // Redirect to the home page after successful login
+            this.loggedIn = true;
+            const user_id = response.user_id;
+            const username = response.username;
+            console.log("my user_id:" + user_id);
+            console.log("my username:" + username);
+            localStorage.setItem('user_id', user_id);
+            localStorage.setItem('username', username);
+            localStorage.setItem('loggedIn', this.loggedIn);
+            this.$router.push('/');
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
+    
+
+
   },
 }
 </script>

@@ -11,10 +11,10 @@
           alt="..."
         />
         <h4 class="title">
-          Chet Faker
+          {{user_name}}
           <br />
           <a href="#">
-            <small>@chetfaker</small>
+            <small>@{{user_name}}</small>
           </a>
         </h4>
       </div>
@@ -46,11 +46,7 @@ export default {
     return {
       details: [
         {
-          title: "12",
-          subTitle: "Followers",
-        },
-        {
-          title: "20",
+          title: localStorage.getItem('post_count'),
           subTitle: "Posts",
         },
         {
@@ -58,6 +54,7 @@ export default {
           subTitle: "Comments",
         },
       ],
+      user_name: localStorage.getItem('username'),
     };
   },
   methods: {
@@ -71,7 +68,9 @@ export default {
         return "col-lg-3";
       }
     },
+    
   },
+  
 };
 </script>
 <style></style>
