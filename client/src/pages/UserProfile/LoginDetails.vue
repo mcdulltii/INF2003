@@ -1,28 +1,18 @@
 <template>
   <div style="width: 50%; margin: auto">
-    <card class="card" title="Login" style="align-items: center; margin-top: 20%; padding: auto"> 
+    <card class="card" title="Login" style="align-items: center; margin-top: 20%; padding: auto">
       <div>
         <form @submit.prevent>
           <div class="row">
             <div class="col-md-20">
-              <fg-input
-                type="text"
-                label="Username"
-                placeholder="Username"
-                v-model="username"
-              required>
+              <fg-input type="text" label="Username" placeholder="Username" v-model="username" required>
               </fg-input>
             </div>
           </div>
-  
+
           <div class="row">
             <div class="col-md-20">
-              <fg-input
-                type="password"
-                label="Password"
-                placeholder="Password"
-                v-model="password"
-              required>
+              <fg-input type="password" label="Password" placeholder="Password" v-model="password" required>
               </fg-input>
             </div>
           </div>
@@ -31,7 +21,7 @@
               Login
             </p-button>
             <p style="padding-top: 20px"></p>
-            <label>{{error}}</label>
+            <label>{{ error }}</label>
             <router-link :to="{ path: '/register' }">
               <p style="text-decoration: underline;"> New to Bludit? Register now</p>
             </router-link>
@@ -51,13 +41,23 @@ export default {
       password: '',
       error: '',
       success: '',
+      loggedIn: false,
     };
   },
   methods: {
-    login() {
+    async login() {
+
       // get new values from inputs and trim whitespace
       var login_username = this.username.trim();
       var login_password = this.password.trim();
+      const encoder = new TextEncoder();
+      const encodedData = encoder.encode(login_password);
+      const hash = await crypto.subtle.digest('SHA-256', encodedData);
+      const hashArray = Array.from(new Uint8Array(hash));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      var hash_password = hashHex;
+      console.log("my login hash:" + hash_password);
+
       // call api to add post
       fetch('/users/login', {
         method: 'POST',
@@ -66,38 +66,40 @@ export default {
         },
         body: JSON.stringify({
           username: login_username,
-          password: login_password,
+          password: hash_password,
         }),
       })
-      .then(response => {
-        if (response.status == 200) {
-          return response.json();
-        } else {
-          this.error = 'Username or Password do not match';
-          return -1;
-        }
-      })
-      .then(response => {
-        if (response == -1)
-          this.$router.push('');
-        else
-          // Redirect to the home page after successful login
-          this.$router.push('/');
-      })
-      .then(data => {
-            // Assuming the response contains 'user_id' as a string (VARCHAR)
-            const user_id = data.user_id;
-            // Do whatever you need to do with the user_id, e.g., save it in Vuex store or local storage
-            LocalStorage.set('user_id', user_id);
-            console.log('User ' + user_id + ' logged in.');
-            // Redirect to the home page after successful login
-            this.$router.push('/');    
+        .then(response => {
+          if (response.status == 200) {
+            return response.json();
+          } else {
+            this.error = 'Username or Password do not match';
+            return -1;
+          }
         })
-
-      .catch(error => {
-        console.log(error);
-      });
+        .then(async response => {
+          if (response == -1)
+            this.$router.push('');
+          else {
+            // Redirect to the home page after successful login
+            this.loggedIn = true;
+            const user_id = response.user_id;
+            const username = response.username;
+            console.log("my user_id:" + user_id);
+            console.log("my username:" + username);
+            localStorage.setItem('user_id', user_id);
+            localStorage.setItem('username', username);
+            localStorage.setItem('loggedIn', this.loggedIn);
+            this.$router.push('/');
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
+    
+
+
   },
 }
 </script>
