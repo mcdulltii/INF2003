@@ -23,6 +23,14 @@
               <p>Stats</p>
             </a>
           </li> -->
+          <li class="nav-item" v-show="isHomePage">
+            <div class="search-container nav-link">
+              <input type="text" class="search-input" v-model="searchQuery" @keyup.enter="getPostsFromSearch" placeholder="Search...">
+              <a class="search-btn" @click="getPostsFromSearch" href="#">
+                <i class="ti-search"></i>
+              </a>
+            </div>
+          </li>
           <li class="nav-item" v-show="!loggedIn">
             <a v-if="true" href="#/login" class="nav-link">
               <i class="ti-face-smile"></i>
@@ -47,54 +55,19 @@
   </nav>
 </template>
 <script>
+import axios from 'axios';
+import { eventBus } from '../../services/eventBus.js';
 
 // Added a post count to the user profile here so that it can be refreshed dynamically.
 export default {
-  computed: {
-    routeName() {
-      const { name } = this.$route;
-      return this.capitalizeFirstLetter(name);
-    },
-    filteredItems() {
-      const query = this.filterQuery.toLowerCase();
-      return this.items.filter(item => item.toLowerCase().includes(query));
-    },
-    // filteredSubreddits() {
-    //   const query = this.filterQuery.toLowerCase();
-    //   return this.popularSubreddits.filter(subreddit => subreddit.toLowerCase().includes(query));
-    // },
-    async updateFilteredSubreddits() {
-      const query = this.filterQuery.toLowerCase();
-      try {
-        const response = await axios.get('/api/topSubreddits', {
-          params: { searchQuery: query },
-        });
-        this.filteredSubreddits = response.data.subreddits;
-      } catch (error) {
-        console.error('Error fetching top subreddits:', error);
-        this.filteredSubreddits = [];
-      }
-    },
-    // Update filteredSubreddits to fetch top 3 subreddits based on post count
-    async filteredSubreddits() {
-      const query = this.filterQuery.toLowerCase();
-      try {
-        const response = await axios.get('/api/topSubreddits', {
-          params: { searchQuery: query },
-        });
-        return response.data.subreddits;
-      } catch (error) {
-        console.error('Error fetching top subreddits:', error);
-        return [];
-      }
-    },
-  },
   data() {
     return {
+      isHomePage: false,
       loggedIn: localStorage.getItem('loggedIn'),
       activeNotifications: false,
       user_name: localStorage.getItem('username'),
       filterQuery: "",
+      searchQuery: "",
       popularSubreddits: [
         "r/funny",
         "r/AskReddit",
@@ -152,18 +125,105 @@ export default {
         .catch(error => {
           console.log(error);
         });
+    },
+    getPostsFromSearch() {
+      eventBus.$emit('search', this.searchQuery);
+      console.log(this.searchQuery);
+    },
+    checkIfHomePage() {
+      const currentUrl = this.$route.fullPath;
+      this.isHomePage = currentUrl === '/';
     }
   },
   beforeMount() {
-    this.getPostCount()
+    this.getPostCount();
+  },
+  created() {
+    this.checkIfHomePage();
+  },
+  computed: {
+    routeName() {
+      const { name } = this.$route;
+      return this.capitalizeFirstLetter(name);
+    },
+    filteredItems() {
+      const query = this.filterQuery.toLowerCase();
+      return this.items.filter(item => item.toLowerCase().includes(query));
+    },
+    // filteredSubreddits() {
+    //   const query = this.filterQuery.toLowerCase();
+    //   return this.popularSubreddits.filter(subreddit => subreddit.toLowerCase().includes(query));
+    // },
+    async updateFilteredSubreddits() {
+      const query = this.filterQuery.toLowerCase();
+      try {
+        const response = await axios.get('/api/topSubreddits', {
+          params: { searchQuery: query },
+        });
+        this.filteredSubreddits = response.data.subreddits;
+      } catch (error) {
+        console.error('Error fetching top subreddits:', error);
+        this.filteredSubreddits = [];
+      }
+    },
+    // Update filteredSubreddits to fetch top 3 subreddits based on post count
+    async filteredSubreddits() {
+      const query = this.filterQuery.toLowerCase();
+      try {
+        const response = await axios.get('/api/topSubreddits', {
+          params: { searchQuery: query },
+        });
+        return response.data.subreddits;
+      } catch (error) {
+        console.error('Error fetching top subreddits:', error);
+        return [];
+      }
+    },
   },
 };
 </script>
+
 <style>
 #filterBar {
   width: 100%;
   box-sizing: border-box;
   padding: 5px;
   margin-bottom: 10px;
+}
+
+.search-container {
+  background: #fff;
+  height: 40px;
+  border-radius: 30px;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.8s;
+  box-shadow: 4px 4px 6px 0 rgba(255, 255, 255, .3),
+    -4px -4px 6px 0 rgba(116, 125, 136, .2),
+    inset -4px -4px 6px 0 rgba(255, 255, 255, .2),
+    inset 4px 4px 6px 0 rgba(0, 0, 0, .2);
+}
+
+.search-container:hover>.search-input,
+.search-container>.search-input:focus {
+  width: 400px;
+}
+
+.search-container .search-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 0px;
+  font-weight: 500;
+  font-size: 16px;
+  transition: 0.8s;
+
+}
+
+.search-container .search-btn .fas {
+  color: #337ab7;
 }
 </style>
