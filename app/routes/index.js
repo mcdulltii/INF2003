@@ -333,7 +333,7 @@ router.get('*', (req, res) => {
 // // Server-side route for fetching top 3 subreddits based on post count
 // app.get('/api/topSubreddits', (req, res) => {
 //   const searchQuery = req.query.searchQuery.toLowerCase();
-  
+
 //   // Example: Fetch top 3 subreddits with most posts from your database
 //   const topSubreddits = [
 //     { name: 'r/funny', postCount: 1000 },
