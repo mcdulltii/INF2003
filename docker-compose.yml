@@ -39,6 +39,7 @@ services:
   mongodb:
     image: docker.io/bitnami/mongodb-sharded:6.0
     container_name: mongodb
+    restart: always
     profiles: ['server', 'all']
     environment:
       - MONGODB_ADVERTISED_HOSTNAME=mongodb
@@ -53,6 +54,7 @@ services:
   mongodb-shard0:
     image: docker.io/bitnami/mongodb-sharded:6.0
     container_name: mongodb-shard0
+    restart: always
     profiles: ['server', 'all']
     environment:
       - MONGODB_ADVERTISED_HOSTNAME=mongodb-shard0
@@ -68,6 +70,7 @@ services:
   mongodb-shard1:
     image: docker.io/bitnami/mongodb-sharded:6.0
     container_name: mongodb-shard1
+    restart: always
     profiles: ['server', 'all']
     environment:
       - MONGODB_ADVERTISED_HOSTNAME=mongodb-shard1
@@ -83,6 +86,7 @@ services:
   mongodb-shard2:
     image: docker.io/bitnami/mongodb-sharded:6.0
     container_name: mongodb-shard2
+    restart: always
     profiles: ['server', 'all']
     environment:
       - MONGODB_ADVERTISED_HOSTNAME=mongodb-shard2
@@ -98,6 +102,7 @@ services:
   mongodb-cfg:
     image: docker.io/bitnami/mongodb-sharded:6.0
     container_name: mongodb-cfg
+    restart: always
     profiles: ['server', 'all']
     environment:
       - MONGODB_ADVERTISED_HOSTNAME=mongodb-cfg
