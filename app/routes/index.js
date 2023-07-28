@@ -155,6 +155,57 @@ router.get("/posts/get/:post_id", async (req, res) => {
   res.json(await Post.find({ post_id: req.params.post_id }));
 });
 
+router.get("/posts/sorted-by-comments/:current_page", async (req, res) => {
+  try {
+    const currentPage = parseInt(req.params.current_page);
+    const pageOffset = 10; // Assuming a fixed number of posts per page
+
+    // Get the number of pages for comments and posts
+    const numPosts = await Post.countDocuments({});
+    const numPages = Math.ceil(numPosts / pageOffset);
+
+    // Convert the current_page to the number of documents to skip
+    const skipDocuments = (currentPage) * pageOffset;
+
+    // Get all posts sorted by the number of comments using the aggregate framework
+    const sortedPosts = await Post.aggregate([
+      {
+        $lookup: {
+          from: "comments",
+          localField: "post_id", // Use "post_id" instead of "_id"
+          foreignField: "post_id",
+          as: "comments",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          post_id: 1,
+          post_datetime: 1,
+          post_title: 1,
+          subreddit: 1,
+          post_url: 1,
+          flair_text: 1,
+          post_content: 1,
+          num_comments: { $size: "$comments" }, // Calculate the number of comments as the size of the comments array
+        },
+      },
+      { $sort: { num_comments: -1 } }, // Sort by 'num_comments' in descending order (-1)
+      { $skip: skipDocuments }, // Skip the appropriate number of posts based on the current page
+      { $limit: pageOffset }, // Limit the number of posts per page
+    ]);
+
+    res.json({
+      num_pages: numPages,
+      posts: sortedPosts,
+    });
+  } catch (error) {
+    console.error("Error retrieving sorted posts by comments:", error);
+    res.status(500).json({ error: "Failed to retrieve sorted posts by comments" });
+  }
+});
+
+
 // Route to search for a post from MongoDB
 router.get("/posts/search/:search_term", async (req, res) => {
   res.json(await Post.find({ post_title: { $regex: req.params.search_term, $options: "i" } }));
@@ -261,63 +312,6 @@ router.post("/comments/update/:_id", async (req, res) => {
 router.post("/comments/delete/:_id", async (req, res) => {
   var comment = await Comment.findOneAndRemove({ _id: req.params._id });
   res.json(comment);
-
-
-// filter related functions are from here onwards, MongoDB
-
-// API route to get posts sorted by the number of comments
-router.get("/posts/sorted-by-comments", async (req, res) => {
-  try {
-    // Use the aggregation framework to sort posts by the number of comments
-    const sortedPosts = await Post.aggregate([
-      {
-        $lookup: {
-          from: "comments", // Replace 'comments' with the actual name of the comments collection
-          localField: "post_id",
-          foreignField: "post_id",
-          as: "comments",
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          post_id: 1,
-          post_datetime: 1,
-          post_title: 1,
-          subreddit: 1,
-          post_url: 1,
-          flair_text: 1,
-          post_content: 1,
-          num_comments: { $size: "$comments" }, // Add a new field 'num_comments' representing the number of comments
-        },
-      },
-      { $sort: { num_comments: -1 } }, // Sort by 'num_comments' in descending order (-1)
-    ]);
-
-    res.json(sortedPosts);
-  } catch (error) {
-    console.error("Error retrieving sorted posts:", error);
-    res.status(500).json({ error: "Failed to retrieve sorted posts" });
-  }
-});
-
-  // Route to search for subbludits based on the search query
-router.get('/subbludits/search', async (req, res) => {
-  try {
-    const searchQuery = req.query.q; // Get the search query from the request query parameter
-
-    // Use a regular expression to perform a case-insensitive search for subbludit names
-    const foundSubbludits = await Subbludit.find({
-      name: { $regex: new RegExp(searchQuery, 'i') },
-    }).select('name');
-
-    res.json(foundSubbludits);
-  } catch (error) {
-    console.error('Error searching subbludits:', error);
-    res.status(500).json({ error: 'Failed to search subbludits' });
-  }
-});
-
 });
 
 router.get('*', (req, res) => {

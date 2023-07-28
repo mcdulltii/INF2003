@@ -15,7 +15,7 @@
         </card>
         <router-link v-for="item in items" :to="{ path: '/indivpost/' + item.post_id }" :key="item.post_id">
         <Post-Card v-bind="item"></Post-Card>
-        </router-link>
+        </router-link>       
         <div class="pagination-wrapper">
             <paginate :page-count="pageCount" :click-handler="onPaginationClick" :prev-text="'Prev'" :next-text="'Next'"
                 :container-class="'pagination'">
@@ -37,6 +37,7 @@
         items: [],
         pageCount: 20,
         current_page: 0,
+        isPostsSorted: false,
         sortedPosts: {
           type: Array,
           required: true,
@@ -46,13 +47,14 @@
     // relevant to search/filter functions
     beforeDestroy() {
     // this.$parent.$off('sorted-posts-updated', this.onSortedPostsUpdated);
-    eventBus.$off('posts-sorted-by-comments', this.sortPostsByPopularity);
+    eventBus.$off('posts-sorted-by-comments', this.sortPostsByPopularity(this.current_page));
     },
     mounted () {
       // relevant to search/filter functions
-      eventBus.$on('posts-sorted-by-comments', this.sortPostsByPopularity);
-
-      this.reloadPosts(this.current_page);
+      eventBus.$on('posts-sorted-by-comments', () => { this.sortPostsByPopularity(this.current_page); });
+      if (this.isPostsSorted == false) {
+        this.reloadPosts(this.current_page);
+      }
     },
     methods: {
       onPaginationClick: function (pageNum) {
@@ -77,20 +79,22 @@
                     console.log(error);
                 });
         },
-
         // relevant to search/filter functions
-    sortPostsByPopularity() {
-      // alert("Function from Home.vue is called");
-
-      axios
-        .get('/posts/sorted-by-comments')
-        .then((response) => {
+    sortPostsByPopularity: function (page) {
+      alert("filter triggered" + page)
+      this.isPostsSorted = true;
+      fetch('/posts/sorted-by-comments/' + page)
+        .then(response => response.json())
+        .then(data => {
           // Emit a custom event to the parent component (home page)
-          this.items = response.data;
+          alert(data.posts);
+          console.log(data);
+          this.items = data.posts;
+          this.items.forEach(item => delete item.__v);
+          this.pageCount = data.num_pages;
         })
         .catch((error) => {
           console.error('Error retrieving sorted posts:', error);
-          // Handle the error here if needed
         });
     }
     },

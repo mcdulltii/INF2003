@@ -66,31 +66,31 @@ export default {
     const query = this.filterQuery.toLowerCase();
     return this.items.filter(item => item.toLowerCase().includes(query));
     },
-    async updateFilteredSubreddits() {
-      const query = this.filterQuery.toLowerCase();
-      try {
-        const response = await axios.get('/api/topSubreddits', {
-          params: { searchQuery: query },
-        });
-        this.filteredSubreddits = response.data.subreddits;
-      } catch (error) {
-        console.error('Error fetching top subreddits:', error);
-        this.filteredSubreddits = [];
-      }
-    },
-    // Update filteredSubreddits to fetch top 3 subreddits based on post count
-    async filteredSubreddits() {
-      const query = this.filterQuery.toLowerCase();
-      try {
-        const response = await axios.get('/api/topSubreddits', {
-          params: { searchQuery: query },
-        });
-        return response.data.subreddits;
-      } catch (error) {
-        console.error('Error fetching top subreddits:', error);
-        return [];
-      }
-    },
+    // async updateFilteredSubreddits() {
+    //   const query = this.filterQuery.toLowerCase();
+    //   try {
+    //     const response = await axios.get('/api/topSubreddits', {
+    //       params: { searchQuery: query },
+    //     });
+    //     this.filteredSubreddits = response.data.subreddits;
+    //   } catch (error) {
+    //     console.error('Error fetching top subreddits:', error);
+    //     this.filteredSubreddits = [];
+    //   }
+    // },
+    // // Update filteredSubreddits to fetch top 3 subreddits based on post count
+    // async filteredSubreddits() {
+    //   const query = this.filterQuery.toLowerCase();
+    //   try {
+    //     const response = await axios.get('/api/topSubreddits', {
+    //       params: { searchQuery: query },
+    //     });
+    //     return response.data.subreddits;
+    //   } catch (error) {
+    //     console.error('Error fetching top subreddits:', error);
+    //     return [];
+    //   }
+    // },
   },
   methods: {
     capitalizeFirstLetter(string) {
