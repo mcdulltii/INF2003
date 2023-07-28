@@ -69,6 +69,7 @@ export default {
           console.log(error);
         });
     },
+
     findPost: function (page) {
       fetch('/posts/search/' + page)
         .then((response) => {
@@ -82,13 +83,14 @@ export default {
           // Handle the error here if needed
         });
     },
-    findPost: function (searchQuery) { 
-      fetch('/posts/search/' + searchQuery) 
-        .then((response) => response.json()) 
+
+    findPost: function (searchQuery) {
+      fetch('/posts/search/' + searchQuery)
+        .then((response) => response.json())
         .then((data) => {
           this.items = data;
-          this.items.forEach(item => delete item.__v); 
-          console.log(this.items); 
+          this.items.forEach(item => delete item.__v);
+          console.log(this.items);
         })
         .catch((error) => {
           console.error('Error retrieving searched posts:', error);

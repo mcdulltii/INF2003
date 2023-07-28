@@ -56,7 +56,7 @@ router.post("/users/login", async (req, res) => {
           // Return the results
           if (results.length > 0) {
             // Login successful
-            res.status(200).json({ success: true });
+            res.status(200).json({ success: true});
           } else {
             // Login failed
             res.status(401).json({ error: 'Invalid username or password.' });
@@ -142,7 +142,6 @@ router.get("/posts/:current_page", async (req, res) => {
   var num_pages = Math.ceil(num_posts / page_offset);
 
   var posts = await Post.find({}).sort({ 'post_datetime': -1 }).skip(req.params.current_page * page_offset).limit(page_offset);
-
   res.json({
     num_pages: num_pages,
     posts: posts
@@ -269,7 +268,7 @@ router.get('*', (req, res) => {
 // // Server-side route for fetching top 3 subreddits based on post count
 // app.get('/api/topSubreddits', (req, res) => {
 //   const searchQuery = req.query.searchQuery.toLowerCase();
-
+  
 //   // Example: Fetch top 3 subreddits with most posts from your database
 //   const topSubreddits = [
 //     { name: 'r/funny', postCount: 1000 },

@@ -14,7 +14,7 @@
         <span class="navbar-toggler-bar"></span>
         <span class="navbar-toggler-bar"></span>
         <span class="navbar-toggler-bar"></span>
-    </a>
+      </a>
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav ml-auto">
           <!-- <li class="nav-item">
@@ -88,19 +88,9 @@ export default {
         console.log(this.searchQuery)
       },
     },
-  computed: {
-    routeName() {
-      const { name } = this.$route;
-      return this.capitalizeFirstLetter(name);
-    },
-    // filteredItems() {
-    //   const query = this.filterQuery.toLowerCase();
-    //   return this.items.filter(item => item.toLowerCase().includes(query));
-    // },
-  },
 };
-</script>
 
+</script>
 <style>
 #filterBar {
   width: 100%;
@@ -126,7 +116,7 @@ export default {
 }
 
 .search-container:hover>.search-input,
-.search-container>.search-input:focus {
+.search-container>.search-input:focus { 
   width: 400px;
 }
 
