@@ -9,12 +9,12 @@
           {{ subreddit }}
         </a>
       </drop-down>
-      <button class="navbar-toggler navbar-burger" type="button" @click="toggleSidebar"
+      <a class="navbar-toggler navbar-burger" type="button" @click="toggleSidebar"
         :aria-expanded="$sidebar.showSidebar" aria-label="Toggle navigation">
         <span class="navbar-toggler-bar"></span>
         <span class="navbar-toggler-bar"></span>
         <span class="navbar-toggler-bar"></span>
-      </button>
+    </a>
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav ml-auto">
           <!-- <li class="nav-item">
@@ -25,9 +25,8 @@
           </li> -->
           <li class="nav-item">
             <div class="search-container nav-link">
-              <input type="text" class="search-input" @input="updateSearches" v-model="searchQuery"
-                placeholder="Search...">
-              <a href="#" class="search-btn">
+              <input type="text" class="search-input" v-model="searchQuery" placeholder="Search...">
+              <a class="search-btn" @click="getPostsFromSearch" href="#">
                 <i class="ti-search"></i>
               </a>
             </div>
@@ -51,103 +50,57 @@
 </template>
 
 <script>
+import axios from 'axios';
+import { eventBus } from '../../services/eventBus.js';
+
 export default {
+  data() {
+      return {
+        activeNotifications: false,
+        filterQuery: "",
+        searchQuery: "",
+        popularSubreddits: [
+          "r/funny",
+          "r/AskReddit",
+          "r/science",
+          "r/gaming",
+        ],
+      };
+    },
+    methods: {
+      capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+      },
+      toggleNotificationDropDown() {
+        this.activeNotifications = !this.activeNotifications;
+      },
+      closeDropDown() {
+        this.activeNotifications = false;
+      },
+      toggleSidebar() {
+        this.$sidebar.displaySidebar(!this.$sidebar.showSidebar);
+      },
+      hideSidebar() {
+        this.$sidebar.displaySidebar(false);
+      },
+      getPostsFromSearch() {
+        eventBus.$emit('search', this.searchQuery);
+        console.log(this.searchQuery)
+      },
+    },
   computed: {
     routeName() {
       const { name } = this.$route;
       return this.capitalizeFirstLetter(name);
     },
-    filteredItems() {
-      const query = this.filterQuery.toLowerCase();
-      return this.items.filter(item => item.toLowerCase().includes(query));
-    },
-    // filteredSubreddits() {
+    // filteredItems() {
     //   const query = this.filterQuery.toLowerCase();
-    //   return this.popularSubreddits.filter(subreddit => subreddit.toLowerCase().includes(query));
+    //   return this.items.filter(item => item.toLowerCase().includes(query));
     // },
-    async updateFilteredSubreddits() {
-      const query = this.filterQuery.toLowerCase();
-      try {
-        const response = await axios.get('/api/topSubreddits', {
-          params: { searchQuery: query },
-        });
-        this.filteredSubreddits = response.data.subreddits;
-      } catch (error) {
-        console.error('Error fetching top subreddits:', error);
-        this.filteredSubreddits = [];
-      }
-    },
-    // Update filteredSubreddits to fetch top 3 subreddits based on post count
-    async filteredSubreddits() {
-      const query = this.filterQuery.toLowerCase();
-      try {
-        const response = await axios.get('/api/topSubreddits', {
-          params: { searchQuery: query },
-        });
-        return response.data.subreddits;
-      } catch (error) {
-        console.error('Error fetching top subreddits:', error);
-        return [];
-      }
-    },
-
-
-
-
-
-
-
-
-
-    // Update search results
-    async searchResults() {
-      const search = this.searchQuery();
-      //try result = 
-    },
-  },
-
-
-
-
-
-
-
-
-
-
-
-  data() {
-    return {
-      activeNotifications: false,
-      filterQuery: "",
-      popularSubreddits: [
-        "r/funny",
-        "r/AskReddit",
-        "r/science",
-        "r/gaming",
-      ],
-    };
-  },
-  methods: {
-    capitalizeFirstLetter(string) {
-      return string.charAt(0).toUpperCase() + string.slice(1);
-    },
-    toggleNotificationDropDown() {
-      this.activeNotifications = !this.activeNotifications;
-    },
-    closeDropDown() {
-      this.activeNotifications = false;
-    },
-    toggleSidebar() {
-      this.$sidebar.displaySidebar(!this.$sidebar.showSidebar);
-    },
-    hideSidebar() {
-      this.$sidebar.displaySidebar(false);
-    },
   },
 };
-
 </script>
+
 <style>
 #filterBar {
   width: 100%;
@@ -172,7 +125,8 @@ export default {
     inset 4px 4px 6px 0 rgba(0, 0, 0, .2);
 }
 
-.search-container:hover>.search-input, .search-container>.search-input:focus {
+.search-container:hover>.search-input,
+.search-container>.search-input:focus {
   width: 400px;
 }
 
