@@ -70,7 +70,7 @@ export default {
     };
   },
   methods: {
-    async registerUser() {
+    registerUser() {
       // get new values from inputs and trim whitespace
       var new_username = this.user.username.trim();
       var new_password = this.user.password.trim();
@@ -79,14 +79,6 @@ export default {
         this.error = 'Passwords do not match';
         return;
       }
-      const encoder = new TextEncoder();
-      const encodedData = encoder.encode(new_password);
-      const hash = await crypto.subtle.digest('SHA-256', encodedData);
-      const hashArray = Array.from(new Uint8Array(hash));
-      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-      var hash_password = hashHex;
-      console.log("my registered hash:" + hash_password);
-
       // call api to add post
       fetch('/users/signup', {
         method: 'POST',
@@ -95,7 +87,7 @@ export default {
         },
         body: JSON.stringify({
           username: new_username,
-          password: hash_password,
+          password: new_password,
         }),
       })
       .then(response => {

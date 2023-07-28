@@ -18,7 +18,7 @@
         <h6>
           b/{{ post.subreddit }}
           <a href="#">
-            <small>&#2022 Posted by: @{{user_name}}</small>
+            <small>&#2022 Posted by: @chetfaker</small>
           </a>
           <small id="post-datetime">{{ post.post_datetime }}</small>
         </h6>
