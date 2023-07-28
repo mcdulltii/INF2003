@@ -24,6 +24,26 @@
               <p>Login/Register</p>
             </a>
           </li>
+          <li class="nav-item" v-show="loggedIn">
+            <drop-down v-if="true" class="nav-item" title="User Details" title-classes="nav-link" icon="ti-face-smile">
+          <li class="nav-item" v-show="loggedIn">
+            <a v-if="true" class="nav-link" @click="logout">
+              <i class="ti-face-smile"></i>
+              <p>Logout</p>
+            </a>
+          </li>
+          <a class="dropdown-item" style="margin-right: 60px;" href="#/userprofile">Profile</a>
+          <a class="dropdown-item" style="margin-right: 60px" href="#/usersettings">User Settings</a>
+          <li class="nav-item" v-show="loggedIn">
+            <drop-down v-if="true" class="nav-item" title="User Details" title-classes="nav-link" icon="ti-face-smile">
+          <li class="nav-item" v-show="loggedIn">
+            <a v-if="true" class="nav-link" @click="logout">
+              <i class="ti-face-smile"></i>
+              <p>Logout</p>
+            </a>
+          </li>
+          <a class="dropdown-item" style="margin-right: 60px;" href="#/userprofile">Profile</a>
+          <a class="dropdown-item" style="margin-right: 60px" href="#/usersettings">User Settings</a>
           <li class="nav-item" v-show="!loggedIn">
             <a v-if="true" href="#/login" class="nav-link">
               <i class="ti-face-smile"></i>
@@ -88,6 +108,20 @@ export default {
       const query = this.filterQuery.toLowerCase();
       return this.popularSubreddits.filter(subreddit => subreddit.toLowerCase().includes(query));
     },
+  },
+  data() {
+    return {
+      loggedIn: localStorage.getItem('loggedIn'),
+      activeNotifications: false,
+      user_name: localStorage.getItem('username'),
+      filterQuery: "",
+      popularSubreddits: [
+        "r/funny",
+        "r/AskReddit",
+        "r/science",
+        "r/gaming",
+      ],
+    };
   },
   methods: {
     capitalizeFirstLetter(string) {
