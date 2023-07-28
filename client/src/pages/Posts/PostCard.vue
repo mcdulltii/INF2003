@@ -9,7 +9,7 @@
         <h6>
           b/{{ subreddit }}
           <a href="#">
-            <small>&#2022 Posted by: @chetfaker</small>
+            <small>&#2022 Posted by: @{{user_name}}</small>
           </a>
           <small>&nbsp {{ post_datetime }}</small>
         </h6>
@@ -51,17 +51,13 @@
 <script>
 import axios from "axios";
 export default {
-  props: ['post_id', 'post_title', 'subreddit', 'post_url', 'post_datetime'],
-  data() {
+  data()
+  {
     return {
-      total_comments: 0,
-      post: null,
-    }
+      user_name: localStorage.getItem('username'),
+    };
   },
-  created() {
-    this.fetchPostData(); // Fetch individual post data
-    this.fetchCommentsLength();
-  },
+  props: ['post_title', 'subreddit', 'post_url', 'post_datetime'],
   methods: {
     async fetchPostData() {
     try {
