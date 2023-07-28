@@ -10,6 +10,7 @@
           b/{{ subreddit }}
           <a href="#">
             <small>&#2022 Posted by: @{{user_name}}</small>
+            <small>&#2022 Posted by: @{{user_name}}</small>
           </a>
           <small>&nbsp {{ post_datetime }}</small>
         </h6>
@@ -51,8 +52,8 @@
 <script>
 import axios from "axios";
 export default {
-  props: ['post_id', 'post_title', 'subreddit', 'post_url', 'post_datetime'],
-  data() {
+  data()
+  {
     return {
       total_comments: 0,
       post: null,

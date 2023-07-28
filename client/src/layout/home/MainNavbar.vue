@@ -34,6 +34,16 @@
           </li>
           <a class="dropdown-item" style="margin-right: 60px;" href="#/userprofile">Profile</a>
           <a class="dropdown-item" style="margin-right: 60px" href="#/usersettings">User Settings</a>
+          <li class="nav-item" v-show="loggedIn">
+            <drop-down v-if="true" class="nav-item" title="User Details" title-classes="nav-link" icon="ti-face-smile">
+          <li class="nav-item" v-show="loggedIn">
+            <a v-if="true" class="nav-link" @click="logout">
+              <i class="ti-face-smile"></i>
+              <p>Logout</p>
+            </a>
+          </li>
+          <a class="dropdown-item" style="margin-right: 60px;" href="#/userprofile">Profile</a>
+          <a class="dropdown-item" style="margin-right: 60px" href="#/usersettings">User Settings</a>
           </drop-down>
           </li>
         </ul>
@@ -103,11 +113,6 @@ export default {
     hideSidebar() {
       this.$sidebar.displaySidebar(false);
     },
-    // relevant to search/filter functions
-    getPostsSortedByComments() {
-      // alert("function is called");
-      eventBus.$emit('posts-sorted-by-comments');
-    },
     logout() {
       localStorage.removeItem('user_id');
       // Update the loggedIn data property to false
@@ -115,6 +120,10 @@ export default {
       localStorage.setItem('loggedIn', false);
       // Redirect the user to the login page or any other desired page
       this.$router.push('/');
+    },
+    getPostsSortedByComments() {
+      // alert("function is called");
+      eventBus.$emit('posts-sorted-by-comments');
     },
     getPostCount() {
       var get_user_id = localStorage.getItem('user_id');
