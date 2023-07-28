@@ -56,7 +56,7 @@ router.post("/users/login", async (req, res) => {
           // Return the results
           if (results.length > 0) {
             // Login successful
-            res.status(200).json({ success: true});
+            res.status(200).json({ success: true });
           } else {
             // Login failed
             res.status(401).json({ error: 'Invalid username or password.' });
@@ -141,7 +141,7 @@ router.get("/posts/:current_page", async (req, res) => {
   var num_posts = await Post.countDocuments({});
   var num_pages = Math.ceil(num_posts / page_offset);
 
-  var posts = await Post.find({}).sort({'post_datetime': -1}).skip(req.params.current_page * page_offset).limit(page_offset);
+  var posts = await Post.find({}).sort({ 'post_datetime': -1 }).skip(req.params.current_page * page_offset).limit(page_offset);
 
   res.json({
     num_pages: num_pages,
@@ -269,7 +269,7 @@ router.get('*', (req, res) => {
 // // Server-side route for fetching top 3 subreddits based on post count
 // app.get('/api/topSubreddits', (req, res) => {
 //   const searchQuery = req.query.searchQuery.toLowerCase();
-  
+
 //   // Example: Fetch top 3 subreddits with most posts from your database
 //   const topSubreddits = [
 //     { name: 'r/funny', postCount: 1000 },
@@ -286,6 +286,23 @@ router.get('*', (req, res) => {
 //   // Send the top 3 subreddits as the API response
 //   res.json({ subreddits: filteredSubreddits.slice(0, 3) });
 // });
+
+// Search function for posts -ani
+router.get('/posts/search/:searchQuery', async (req, res) => {
+  try {
+    const searchQuery = req.query.q; // Get the search query from the request query parameter
+
+    // Use a regular expression to perform a case-insensitive search for subbludit names
+    const searchResults = await Post.find({
+      name: { $regex: new RegExp(searchQuery, 'i') },
+    });
+
+    res.json(searchResults);
+  } catch (error) {
+    console.error('Error searching for posts:', error);
+    res.status(500).json({ error: 'Failed to search for posts.' });
+  }
+});
 
 module.exports = router;
 
