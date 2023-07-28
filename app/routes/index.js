@@ -56,7 +56,8 @@ router.post("/users/login", async (req, res) => {
           // Return the results
           if (results.length > 0) {
             // Login successful
-            res.status(200).json({ success: true});
+            const user_id = results[0].user_id;
+            res.status(200).json({ success: true, user_id: user_id.toString(), username: username});
           } else {
             // Login failed
             res.status(401).json({ error: 'Invalid username or password.' });
@@ -118,19 +119,82 @@ router.delete("/users/delete/:id", async (req, res) => {
   });
 });
 
+// Create a route to get user posts in SQL
+router.post("/user/posts/:id", async (req, res) => {
+  const { id } = req.params;
+  console.log
+  db.getConnection((err, conn) => {
+    if (err) {
+      console.log("Not connected due to error: " + err);
+      res.status(401).json(err);
+    } else {
+      console.log("Connected! Connection id is " + conn.threadId);
+      // Run the query
+      conn.query("SELECT COUNT(*) AS num_posts FROM posts WHERE posts.user_id = ?", [id], (err, results) => {
+        if (err) {
+          console.log("Failed to select from posts table: " + err);
+          res.status(401).json(err);
+        } else {
+          // Return the results
+          res.status(200).json({ success: true, num_posts: parseInt(results[0].num_posts)});
+        }
+        conn.end();
+      });
+    }
+  });
+});
+
+// Get all avail subreddits
+router.post("/subreddit/get", async (req, res) => {
+  db.getConnection((err, conn) => {
+    if (err) {
+      console.log("Not connected due to error: " + err);
+      res.status(401).json(err);
+    } else {
+      console.log("Connected! Connection id is " + conn.threadId);
+      // Run the query
+      conn.query("SELECT forum_name FROM forums", (err, results) => {
+        if (err) {
+          console.log("Failed to select from posts table: " + err);
+          res.status(401).json(err);
+        } else {
+          // Return the results
+          res.status(200).json({ success: true, forums: results});
+        }
+        conn.end();
+      });
+    }
+  });
+});
+
 // Route to add a post to MongoDB
 router.post("/posts/add", async (req, res) => {
   var post = new Post();
-
   // if post_id is not passed in, generate a random 7 length string
   post.post_id = req.body.post_id ?? Math.random().toString(36).substring(2, 9);
   post.post_title = req.body.post_title;
-  post.subreddit = req.body.subreddit ?? "All";
-  post.post_url = req.body.post_url ?? "localhost:8000/#/indivpost/" + post.post_id;
+  post.subreddit = req.body.post_subreddit ?? "All"; // Forum Value
+  post.post_url = req.body.post_url ?? "localhost:8000/#/indivpost/" + post.post_id; // POST ID
   post.flair_text = req.body.flair_text ?? "test";
   post.post_datetime = req.body.post_datetime ?? new Date().toISOString().slice(0, 19);
   post.post_content = req.body.post_content ?? "";
-  
+  var userID = req.body.post_user_id
+  db.getConnection((err, conn) => {
+    if (err) {
+      console.log("Not connected due to error: " + err);
+    } else {
+      console.log("Connected! Connection id is " + conn.threadId);
+      // Run the query
+
+      conn.query("INSERT INTO posts (post_id, user_id, forum_id) values(?, ?, (SELECT forum_id From forums where forum_name = ?))", [post.post_id, userID, post.subreddit], (err, results) => {
+        if (err) {
+          console.log("Failed to insert posts table: " + err);
+        } else {
+        }
+        conn.end();
+      });
+    }
+  });
   await post.save();
   res.json(post);
 });
@@ -164,7 +228,7 @@ router.get("/posts/search/:key/:value/:page", async (req, res) => {
   var query = {};
   query[req.params.key] = { $regex: req.params.value, $options: "i" };
   var posts = await Post.find(query).skip(req.params.page * page_offset).limit(page_offset);
-  
+
   // get number of pages
   var num_posts = await Post.countDocuments(query);
   var num_pages = Math.ceil(num_posts / page_offset);
@@ -178,7 +242,7 @@ router.get("/posts/search/:key/:value/:page", async (req, res) => {
 // Route to update a post in MongoDB
 router.post("/posts/update/:post_id", async (req, res) => {
   var post = await Post.findOne({ post_id: req.params.post_id });
-  
+
   // Only update the fields that were passed in
   post.post_title = req.body.post_title ?? post.post_title;
   post.subreddit = req.body.subreddit ?? post.subreddit;
@@ -186,7 +250,7 @@ router.post("/posts/update/:post_id", async (req, res) => {
   post.flair_text = req.body.flair_text ?? post.flair_text;
   post.post_datetime = req.body.post_datetime ?? post.post_datetime;
   post.post_content = req.body.post_content ?? post.post_content;
-  
+
   await post.save();
   res.json(post);
 });
@@ -248,10 +312,10 @@ router.get("/comments/search/:key/:value/:page", async (req, res) => {
 // Route to update a comment in MongoDB
 router.post("/comments/update/:_id", async (req, res) => {
   var comment = await Comment.findOne({ _id: req.params._id });
-  
+
   // Only update the fields that were passed in
   comment.comment_message = req.body.comment_message ?? comment.comment_message;
-  
+
   await comment.save();
   res.json(comment);
 });
@@ -265,6 +329,27 @@ router.post("/comments/delete/:_id", async (req, res) => {
 router.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
+
+// // Server-side route for fetching top 3 subreddits based on post count
+// app.get('/api/topSubreddits', (req, res) => {
+//   const searchQuery = req.query.searchQuery.toLowerCase();
+  
+//   // Example: Fetch top 3 subreddits with most posts from your database
+//   const topSubreddits = [
+//     { name: 'r/funny', postCount: 1000 },
+//     { name: 'r/AskReddit', postCount: 850 },
+//     { name: 'r/science', postCount: 750 },
+//     // ... Retrieve the subreddits from your database ...
+//   ];
+
+//   // Filter the subreddits based on the search query and sort by post count
+//   const filteredSubreddits = topSubreddits.filter(subreddit =>
+//     subreddit.name.toLowerCase().includes(searchQuery)
+//   ).sort((a, b) => b.postCount - a.postCount);
+
+//   // Send the top 3 subreddits as the API response
+//   res.json({ subreddits: filteredSubreddits.slice(0, 3) });
+// });
 
 module.exports = router;
 
