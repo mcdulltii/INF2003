@@ -17,9 +17,9 @@
             </div>
           </div>
           <div class="text-center">
-            <button type="submit" round>
+            <p-button type="info" round>
               Login
-            </button>
+            </p-button>
             <p style="padding-top: 20px"></p>
             <label>{{ error }}</label>
             <router-link :to="{ path: '/register' }">

@@ -10,3 +10,6 @@ db.createUser(
         ]
     }
 );
+
+db.comments.createIndex( { post_id: -1 } );
+db.posts.createIndex( { post_id: -1, post_datetime: -1 } );

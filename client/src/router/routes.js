@@ -7,7 +7,7 @@ import NotFound from "@/pages/NotFoundPage.vue";
 import Home from "@/pages/Home.vue";
 import Login from "@/pages/Login.vue"
 import Register from "@/pages/Register.vue"
-import IndivPost from "@/pages/IndivPost.vue";
+import IndivPost from "@/pages/Posts/IndivPostCard.vue";
 import CreatePost from "@/pages/CreatePost.vue";
 import EditPost from "@/pages/EditPost.vue";
 
