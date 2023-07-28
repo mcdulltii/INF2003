@@ -10,7 +10,7 @@
         <h4 class="title" style="margin-left: calc((0.5 - 1) *30px);">
           r/{{ subreddit }}
           <a href="#">
-            <small>&#2022 Posted by: @chetfaker</small>
+            <small>&#2022 Posted by: @{{user_name}}</small>
           </a>
           <small>&nbsp {{ post_datetime }}</small>
         </h4>
@@ -50,6 +50,12 @@
 </template>
 <script>
 export default {
+  data()
+  {
+    return {
+      user_name: localStorage.getItem('username'),
+    };
+  },
   props: ['post_title', 'subreddit', 'post_url', 'post_datetime'],
   methods: {
     getClasses(index) {
