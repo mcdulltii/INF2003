@@ -9,7 +9,8 @@
         <h6>
           b/{{ subreddit }}
           <a href="#">
-            <small>&#2022 Posted by: @chetfaker</small>
+            <small>&#2022 Posted by: @{{user_name}}</small>
+            <small>&#2022 Posted by: @{{user_name}}</small>
           </a>
           <small>&nbsp {{ post_datetime }}</small>
         </h6>
@@ -51,11 +52,12 @@
 <script>
 import axios from "axios";
 export default {
-  props: ['post_id', 'post_title', 'subreddit', 'post_url', 'post_datetime'],
-  data() {
+  data()
+  {
     return {
       total_comments: 0,
       post: null,
+      user_name: localStorage.getItem('username'),
     }
   },
   created() {
@@ -65,10 +67,8 @@ export default {
   methods: {
     async fetchPostData() {
     try {
-      const response = await axios.get('/posts/get/' + this.$route.params.id);
+      const response = await axios.get('/posts/get/' + this.post_id);
       this.post = response.data[0]; // Assuming the response is an array, you can modify this based on your server response
-
-      console.log(this.post.post_url); 
       this.loadPostContent();
     } catch (error) {
       console.error('Error fetching post data:', error);
@@ -76,12 +76,12 @@ export default {
   },
   loadPostContent: function() {
       // if post_url is an image link set postContent to an image tag with the url as the src
-      if (this.post.post_url.match(/\.(jpeg|jpg|gif|png)$/) != null) {
-        this.postContentHome = "<img src='" + this.post.post_url + "'></img>";
+      if (this.post_url.match(/\.(jpeg|jpg|gif|png)$/) != null) {
+        this.postContentHome = "<img src='" + this.post_url + "' style='height: 260px'></img>";
       }
       // else postContent will be a link to the post
       else {
-        this.postContentHome = "<a href='" + this.post.post_url + "'>" + this.post.post_url + "</a>";
+        this.postContentHome = "<a href='" + this.post_url + "'>" + this.post_url + "</a>";
       }
       
     },

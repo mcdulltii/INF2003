@@ -9,6 +9,7 @@ const router = express.Router();
 // Models
 var Post = mongoose.model('Post');
 var Comment = mongoose.model('Comment');
+var Subbludit = mongoose.model('Subbludit');
 
 // Default variables
 const page_offset = 10;
@@ -56,7 +57,8 @@ router.post("/users/login", async (req, res) => {
           // Return the results
           if (results.length > 0) {
             // Login successful
-            res.status(200).json({ success: true});
+            const user_id = results[0].user_id;
+            res.status(200).json({ success: true, user_id: user_id.toString(), username: username});
           } else {
             // Login failed
             res.status(401).json({ error: 'Invalid username or password.' });
@@ -118,19 +120,82 @@ router.delete("/users/delete/:id", async (req, res) => {
   });
 });
 
+// Create a route to get user posts in SQL
+router.post("/user/posts/:id", async (req, res) => {
+  const { id } = req.params;
+  console.log
+  db.getConnection((err, conn) => {
+    if (err) {
+      console.log("Not connected due to error: " + err);
+      res.status(401).json(err);
+    } else {
+      console.log("Connected! Connection id is " + conn.threadId);
+      // Run the query
+      conn.query("SELECT COUNT(*) AS num_posts FROM posts WHERE posts.user_id = ?", [id], (err, results) => {
+        if (err) {
+          console.log("Failed to select from posts table: " + err);
+          res.status(401).json(err);
+        } else {
+          // Return the results
+          res.status(200).json({ success: true, num_posts: parseInt(results[0].num_posts)});
+        }
+        conn.end();
+      });
+    }
+  });
+});
+
+// Get all avail subreddits
+router.post("/subreddit/get", async (req, res) => {
+  db.getConnection((err, conn) => {
+    if (err) {
+      console.log("Not connected due to error: " + err);
+      res.status(401).json(err);
+    } else {
+      console.log("Connected! Connection id is " + conn.threadId);
+      // Run the query
+      conn.query("SELECT forum_name FROM forums", (err, results) => {
+        if (err) {
+          console.log("Failed to select from posts table: " + err);
+          res.status(401).json(err);
+        } else {
+          // Return the results
+          res.status(200).json({ success: true, forums: results});
+        }
+        conn.end();
+      });
+    }
+  });
+});
+
 // Route to add a post to MongoDB
 router.post("/posts/add", async (req, res) => {
   var post = new Post();
-
   // if post_id is not passed in, generate a random 7 length string
   post.post_id = req.body.post_id ?? Math.random().toString(36).substring(2, 9);
   post.post_title = req.body.post_title;
-  post.subreddit = req.body.subreddit ?? "All";
-  post.post_url = req.body.post_url ?? "localhost:8000/#/indivpost/" + post.post_id;
+  post.subreddit = req.body.post_subreddit ?? "All"; // Forum Value
+  post.post_url = req.body.post_url ?? "localhost:8000/#/indivpost/" + post.post_id; // POST ID
   post.flair_text = req.body.flair_text ?? "test";
   post.post_datetime = req.body.post_datetime ?? new Date().toISOString().slice(0, 19);
   post.post_content = req.body.post_content ?? "";
+  var userID = req.body.post_user_id
+  db.getConnection((err, conn) => {
+    if (err) {
+      console.log("Not connected due to error: " + err);
+    } else {
+      console.log("Connected! Connection id is " + conn.threadId);
+      // Run the query
 
+      conn.query("INSERT INTO posts (post_id, user_id, forum_id) values(?, ?, (SELECT forum_id From forums where forum_name = ?))", [post.post_id, userID, post.subreddit], (err, results) => {
+        if (err) {
+          console.log("Failed to insert posts table: " + err);
+        } else {
+        }
+        conn.end();
+      });
+    }
+  });
   await post.save();
   res.json(post);
 });
@@ -153,6 +218,57 @@ router.get("/posts/:current_page", async (req, res) => {
 router.get("/posts/get/:post_id", async (req, res) => {
   res.json(await Post.find({ post_id: req.params.post_id }));
 });
+
+router.get("/posts/sorted-by-comments/:current_page", async (req, res) => {
+  try {
+    const currentPage = parseInt(req.params.current_page);
+    const pageOffset = 10; // Assuming a fixed number of posts per page
+
+    // Get the number of pages for comments and posts
+    const numPosts = await Post.countDocuments({});
+    const numPages = Math.ceil(numPosts / pageOffset);
+
+    // Convert the current_page to the number of documents to skip
+    const skipDocuments = (currentPage) * pageOffset;
+
+    // Get all posts sorted by the number of comments using the aggregate framework
+    const sortedPosts = await Post.aggregate([
+      {
+        $lookup: {
+          from: "comments",
+          localField: "post_id", // Use "post_id" instead of "_id"
+          foreignField: "post_id",
+          as: "comments",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          post_id: 1,
+          post_datetime: 1,
+          post_title: 1,
+          subreddit: 1,
+          post_url: 1,
+          flair_text: 1,
+          post_content: 1,
+          num_comments: { $size: "$comments" }, // Calculate the number of comments as the size of the comments array
+        },
+      },
+      { $sort: { num_comments: -1 } }, // Sort by 'num_comments' in descending order (-1)
+      { $skip: skipDocuments }, // Skip the appropriate number of posts based on the current page
+      { $limit: pageOffset }, // Limit the number of posts per page
+    ]);
+
+    res.json({
+      num_pages: numPages,
+      posts: sortedPosts,
+    });
+  } catch (error) {
+    console.error("Error retrieving sorted posts by comments:", error);
+    res.status(500).json({ error: "Failed to retrieve sorted posts by comments" });
+  }
+});
+
 
 // Route to search for a post from MongoDB
 router.get("/posts/search/:search_term", async (req, res) => {

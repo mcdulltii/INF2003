@@ -8,46 +8,58 @@
         title-classes="nav-link"
         icon="ti-home"
       >
-        <input type="text" id="filterBar" @input="updateFilteredSubreddits" v-model="filterQuery" placeholder="Filter...">
+        <input type="text" id="filterBar" @input="updateFilteredSubreddits" v-model="filterQuery" @click.stop placeholder="Filter...">
+        <!-- relevant to search/filter functions, click event to trigger filter is here -->
+        <a class="dropdown-item icon-container" @click="getPostsSortedByComments" style="padding: 10px 45px 10px 15px;" href="#"><span class="ti-stats-up"></span></a>
         <!-- Display the filteredSubreddits based on user input -->
-        <a v-for="subreddit in filteredSubreddits" :key="subreddit" class="dropdown-item subreddit-option" href="#">
-          {{ subreddit }}
+        <a v-for="subbludit in filteredSubbludits" :key="subbludit" class="dropdown-item subreddit-option" href="#">
+          b/ {{ subbludit.name }}
         </a>
       </drop-down>
-      <button
-        class="navbar-toggler navbar-burger"
-        type="button"
-        @click="toggleSidebar"
-        :aria-expanded="$sidebar.showSidebar"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-bar"></span>
-        <span class="navbar-toggler-bar"></span>
-        <span class="navbar-toggler-bar"></span>
-      </button>
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav ml-auto">
-          <!-- <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="ti-panel"></i>
-              <p>Stats</p>
-            </a>
-          </li> -->
           <li class="nav-item">
             <a v-if="true" href="#/login" class="nav-link">
               <i class="ti-face-smile"></i>
               <p>Login/Register</p>
             </a>
           </li>
-          <li class="nav-item">
-            <drop-down v-if="true"
-            class="nav-item"
-            title="Username"
-            title-classes="nav-link"
-            icon="ti-face-smile"
-          >
-            <a class="dropdown-item" style="margin-right: 60px;" href="#/userprofile">Profile</a>
-            <a class="dropdown-item" style="margin-right: 60px" href="#/usersettings">User Settings</a>
+          <li class="nav-item" v-show="loggedIn">
+            <drop-down v-if="true" class="nav-item" title="User Details" title-classes="nav-link" icon="ti-face-smile">
+          <li class="nav-item" v-show="loggedIn">
+            <a v-if="true" class="nav-link" @click="logout">
+              <i class="ti-face-smile"></i>
+              <p>Logout</p>
+            </a>
+          </li>
+          <a class="dropdown-item" style="margin-right: 60px;" href="#/userprofile">Profile</a>
+          <a class="dropdown-item" style="margin-right: 60px" href="#/usersettings">User Settings</a>
+          <li class="nav-item" v-show="loggedIn">
+            <drop-down v-if="true" class="nav-item" title="User Details" title-classes="nav-link" icon="ti-face-smile">
+          <li class="nav-item" v-show="loggedIn">
+            <a v-if="true" class="nav-link" @click="logout">
+              <i class="ti-face-smile"></i>
+              <p>Logout</p>
+            </a>
+          </li>
+          <a class="dropdown-item" style="margin-right: 60px;" href="#/userprofile">Profile</a>
+          <a class="dropdown-item" style="margin-right: 60px" href="#/usersettings">User Settings</a>
+          <li class="nav-item" v-show="!loggedIn">
+            <a v-if="true" href="#/login" class="nav-link">
+              <i class="ti-face-smile"></i>
+              <p>Login/Register</p>
+            </a>
+          </li>
+          <li class="nav-item" v-show="loggedIn">
+            <drop-down v-if="true" class="nav-item" title="User Details" title-classes="nav-link" icon="ti-face-smile">
+          <li class="nav-item" v-show="loggedIn">
+            <a v-if="true" class="nav-link" @click="logout">
+              <i class="ti-face-smile"></i>
+              <p>Logout</p>
+            </a>
+          </li>
+          <a class="dropdown-item" style="margin-right: 60px;" href="#/userprofile">Profile</a>
+          <a class="dropdown-item" style="margin-right: 60px" href="#/usersettings">User Settings</a>
           </drop-down>
           </li>
         </ul>
@@ -56,50 +68,52 @@
   </nav>
 </template>
 <script>
+import axios from 'axios';
+import { eventBus } from '../../services/eventBus.js';
 
+// Added a post count to the user profile here so that it can be refreshed dynamically.
 export default {
+  data() {
+    return {
+      activeNotifications: false,
+      filterQuery: "",
+      // default options
+      filteredSubbludits: [
+        { _id: '1', name: 'art' },
+        { _id: '2', name: 'artificial' },
+        { _id: '3', name: 'datascience' },
+      ],
+      loggedIn: localStorage.getItem('loggedIn'),
+      activeNotifications: false,
+      user_name: localStorage.getItem('username'),
+      filterQuery: "",
+      popularSubreddits: [
+        "r/funny",
+        "r/AskReddit",
+        "r/science",
+        "r/gaming",
+      ],
+    };
+  },
   computed: {
     routeName() {
       const { name } = this.$route;
       return this.capitalizeFirstLetter(name);
     },
     filteredItems() {
-    const query = this.filterQuery.toLowerCase();
-    return this.items.filter(item => item.toLowerCase().includes(query));
-    },
-    // filteredSubreddits() {
-    //   const query = this.filterQuery.toLowerCase();
-    //   return this.popularSubreddits.filter(subreddit => subreddit.toLowerCase().includes(query));
-    // },
-    async updateFilteredSubreddits() {
       const query = this.filterQuery.toLowerCase();
-      try {
-        const response = await axios.get('/api/topSubreddits', {
-          params: { searchQuery: query },
-        });
-        this.filteredSubreddits = response.data.subreddits;
-      } catch (error) {
-        console.error('Error fetching top subreddits:', error);
-        this.filteredSubreddits = [];
-      }
+      return this.items.filter(item => item.toLowerCase().includes(query));
     },
-    // Update filteredSubreddits to fetch top 3 subreddits based on post count
-    async filteredSubreddits() {
+    filteredSubreddits() {
       const query = this.filterQuery.toLowerCase();
-      try {
-        const response = await axios.get('/api/topSubreddits', {
-          params: { searchQuery: query },
-        });
-        return response.data.subreddits;
-      } catch (error) {
-        console.error('Error fetching top subreddits:', error);
-        return [];
-      }
+      return this.popularSubreddits.filter(subreddit => subreddit.toLowerCase().includes(query));
     },
   },
   data() {
     return {
+      loggedIn: localStorage.getItem('loggedIn'),
       activeNotifications: false,
+      user_name: localStorage.getItem('username'),
       filterQuery: "",
       popularSubreddits: [
         "r/funny",
@@ -125,6 +139,47 @@ export default {
     hideSidebar() {
       this.$sidebar.displaySidebar(false);
     },
+    logout() {
+      localStorage.removeItem('user_id');
+      // Update the loggedIn data property to false
+      this.loggedIn = false;
+      localStorage.setItem('loggedIn', false);
+      // Redirect the user to the login page or any other desired page
+      this.$router.push('/');
+    },
+    getPostsSortedByComments() {
+      // alert("function is called");
+      eventBus.$emit('posts-sorted-by-comments');
+    },
+    getPostCount() {
+      var get_user_id = localStorage.getItem('user_id');
+      console.log(get_user_id)
+      // call api to add post
+      fetch('/user/posts/' + get_user_id, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          id: get_user_id,
+        }),
+      })
+        .then(response => {
+          response = response.json()
+          response.then(function (res) {
+            return new Promise((result) => {
+              localStorage.setItem('post_count', res.num_posts);
+            })
+
+          })
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  },
+  beforeMount() {
+    this.getPostCount()
   },
 };
 </script>

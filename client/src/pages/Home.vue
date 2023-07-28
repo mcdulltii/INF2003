@@ -15,7 +15,7 @@
         </card>
         <router-link v-for="item in items" :to="{ path: '/indivpost/' + item.post_id }" :key="item.post_id">
         <Post-Card v-bind="item"></Post-Card>
-        </router-link>
+        </router-link>       
         <div class="pagination-wrapper">
             <paginate :page-count="pageCount" :click-handler="onPaginationClick" :prev-text="'Prev'" :next-text="'Next'"
                 :container-class="'pagination'">
@@ -29,16 +29,32 @@
   import '@/assets/css/pagination.css';
   import axios from 'axios';
   import PostCard from "./Posts/PostCard.vue";
+  // relevant to search/filter functions, pls import this
+  import { eventBus } from '../services/eventBus';
   export default {
     data () {
       return {
         items: [],
         pageCount: 20,
         current_page: 0,
+        isPostsSorted: false,
+        sortedPosts: {
+          type: Array,
+          required: true,
+        },
       }
     },
+    // relevant to search/filter functions
+    beforeDestroy() {
+    // this.$parent.$off('sorted-posts-updated', this.onSortedPostsUpdated);
+    eventBus.$off('posts-sorted-by-comments', this.sortPostsByPopularity(this.current_page));
+    },
     mounted () {
-      this.reloadPosts(this.current_page);
+      // relevant to search/filter functions
+      eventBus.$on('posts-sorted-by-comments', () => { this.sortPostsByPopularity(this.current_page); });
+      if (this.isPostsSorted == false) {
+        this.reloadPosts(this.current_page);
+      }
     },
     methods: {
       onPaginationClick: function (pageNum) {
@@ -63,6 +79,24 @@
                     console.log(error);
                 });
         },
+        // relevant to search/filter functions
+    sortPostsByPopularity: function (page) {
+      alert("filter triggered" + page)
+      this.isPostsSorted = true;
+      fetch('/posts/sorted-by-comments/' + page)
+        .then(response => response.json())
+        .then(data => {
+          // Emit a custom event to the parent component (home page)
+          alert(data.posts);
+          console.log(data);
+          this.items = data.posts;
+          this.items.forEach(item => delete item.__v);
+          this.pageCount = data.num_pages;
+        })
+        .catch((error) => {
+          console.error('Error retrieving sorted posts:', error);
+        });
+    }
     },
     components: {
       PostCard,
