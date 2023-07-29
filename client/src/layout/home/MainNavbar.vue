@@ -8,43 +8,17 @@
         title-classes="nav-link"
         icon="ti-home"
       >
-        <input type="text" id="filterBar" @input="updateFilteredSubreddits" v-model="filterQuery" @click.stop placeholder="Filter...">
+        <input type="text" class="form-control" id="filterBar" v-on:keyup="updateFilteredSubbludits" v-model="filterQuery" @click.stop placeholder="Filter...">
         <!-- relevant to search/filter functions, click event to trigger filter is here -->
-        <a class="dropdown-item icon-container" @click="getPostsSortedByComments" style="padding: 10px 45px 10px 15px;" href="#"><span class="ti-stats-up"></span></a>
+        <a class="dropdown-item" style="padding: 10px 45px 10px 15px; margin-bottom: 5px;" href="#"><span @click="getPostsSortedByComments" class="ti-stats-up"> Trending </span></a>
         <!-- Display the filteredSubreddits based on user input -->
         <a v-for="subbludit in filteredSubbludits" :key="subbludit" class="dropdown-item subreddit-option" href="#">
-          b/ {{ subbludit.name }}
+          <router-link :to="{ path: '/subbludit/' + subbludit.name }"> b/ {{ subbludit.name }} </router-link>
         </a>
       </drop-down>
       <div class="collapse navbar-collapse">
-        <ul class="navbar-nav ml-auto">
+        <ul class="navbar-nav ml-auto"> 
           <li class="nav-item">
-            <a v-if="true" href="#/login" class="nav-link">
-              <i class="ti-face-smile"></i>
-              <p>Login/Register</p>
-            </a>
-          </li>
-          <li class="nav-item" v-show="loggedIn">
-            <drop-down v-if="true" class="nav-item" title="User Details" title-classes="nav-link" icon="ti-face-smile">
-          <li class="nav-item" v-show="loggedIn">
-            <a v-if="true" class="nav-link" @click="logout">
-              <i class="ti-face-smile"></i>
-              <p>Logout</p>
-            </a>
-          </li>
-          <a class="dropdown-item" style="margin-right: 60px;" href="#/userprofile">Profile</a>
-          <a class="dropdown-item" style="margin-right: 60px" href="#/usersettings">User Settings</a>
-          <li class="nav-item" v-show="loggedIn">
-            <drop-down v-if="true" class="nav-item" title="User Details" title-classes="nav-link" icon="ti-face-smile">
-          <li class="nav-item" v-show="loggedIn">
-            <a v-if="true" class="nav-link" @click="logout">
-              <i class="ti-face-smile"></i>
-              <p>Logout</p>
-            </a>
-          </li>
-          <a class="dropdown-item" style="margin-right: 60px;" href="#/userprofile">Profile</a>
-          <a class="dropdown-item" style="margin-right: 60px" href="#/usersettings">User Settings</a>
-          <li class="nav-item" v-show="!loggedIn">
             <a v-if="true" href="#/login" class="nav-link">
               <i class="ti-face-smile"></i>
               <p>Login/Register</p>
@@ -86,13 +60,6 @@ export default {
       loggedIn: localStorage.getItem('loggedIn'),
       activeNotifications: false,
       user_name: localStorage.getItem('username'),
-      filterQuery: "",
-      popularSubreddits: [
-        "r/funny",
-        "r/AskReddit",
-        "r/science",
-        "r/gaming",
-      ],
     };
   },
   computed: {
@@ -104,24 +71,7 @@ export default {
       const query = this.filterQuery.toLowerCase();
       return this.items.filter(item => item.toLowerCase().includes(query));
     },
-    filteredSubreddits() {
-      const query = this.filterQuery.toLowerCase();
-      return this.popularSubreddits.filter(subreddit => subreddit.toLowerCase().includes(query));
-    },
-  },
-  data() {
-    return {
-      loggedIn: localStorage.getItem('loggedIn'),
-      activeNotifications: false,
-      user_name: localStorage.getItem('username'),
-      filterQuery: "",
-      popularSubreddits: [
-        "r/funny",
-        "r/AskReddit",
-        "r/science",
-        "r/gaming",
-      ],
-    };
+
   },
   methods: {
     capitalizeFirstLetter(string) {
@@ -176,7 +126,23 @@ export default {
         .catch(error => {
           console.log(error);
         });
-    }
+    },
+    async updateFilteredSubbludits() {
+      const query = this.filterQuery.toLowerCase();
+
+      // Make a request to your API endpoint for searching subreddits
+      try {
+        const response = await axios.get('/subreddit/search/' + query);
+        const apiResponse = response.data;
+        const subredditsFromAPI = apiResponse.success ? apiResponse.subreddits : [];
+
+        // Update the filteredSubbludits with the retrieved subreddits
+        this.filteredSubbludits = subredditsFromAPI.map(subbludit => ({ _id: subbludit.forum_name, name: subbludit.forum_name }));
+      } catch (error) {
+        console.error('Error fetching subreddits:', error);
+        this.filteredSubbludits = []; // Clear the list if an error occurs
+      }
+    },
   },
   beforeMount() {
     this.getPostCount()

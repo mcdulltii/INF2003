@@ -52,6 +52,7 @@
 <script>
 import axios from "axios";
 export default {
+  props: ['post_id', 'post_title', 'subreddit', 'post_url', 'post_datetime'],
   data()
   {
     return {

@@ -9,7 +9,7 @@
             
           />
           <router-link :to="{ path: '/createpost' }">
-            <textarea style="width: 150%">Create Post</textarea>
+            <fg-input style="width: 200%" placeholder="Create Post"></fg-input>
           </router-link>
           </div>
         </card>
@@ -37,7 +37,7 @@
         items: [],
         pageCount: 20,
         current_page: 0,
-        isPostsSorted: false,
+        isPopsSorted: false,
         sortedPosts: {
           type: Array,
           required: true,
@@ -52,8 +52,11 @@
     mounted () {
       // relevant to search/filter functions
       eventBus.$on('posts-sorted-by-comments', () => { this.sortPostsByPopularity(this.current_page); });
-      if (this.isPostsSorted == false) {
+      if (this.isPopsSorted == false) {
         this.reloadPosts(this.current_page);
+      }
+      else {
+        this.sortPostsByPopularity(this.current_page);
       }
     },
     methods: {
@@ -81,13 +84,11 @@
         },
         // relevant to search/filter functions
     sortPostsByPopularity: function (page) {
-      alert("filter triggered" + page)
       this.isPostsSorted = true;
       fetch('/posts/sorted-by-comments/' + page)
         .then(response => response.json())
         .then(data => {
           // Emit a custom event to the parent component (home page)
-          alert(data.posts);
           console.log(data);
           this.items = data.posts;
           this.items.forEach(item => delete item.__v);
