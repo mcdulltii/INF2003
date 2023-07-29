@@ -1,4 +1,3 @@
 docker-compose down
-DOCKER_BUILDKIT=1 docker-compose build
+DOCKER_BUILDKIT=1 docker-compose --profile all up -d --build
 docker rmi $(docker images -f "dangling=true" -q)
-docker-compose up -d

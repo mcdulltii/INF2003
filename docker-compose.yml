@@ -1,10 +1,11 @@
 version: '3.8'
 
 services:
-  app:
-    container_name: app-server
+  app-server:
     build: .
+    container_name: app-server
     restart: always
+    profiles: ['server', 'all']
     ports:
       - 8000:8000
     environment:
@@ -18,25 +19,116 @@ services:
       - app_network
 
   mariadb:
-    container_name: mariadb
-    image: mariadb
+    image: bitnami/mariadb-galera:latest
     restart: always
+    profiles: ['server', 'all']
     environment:
+      - ALLOW_EMPTY_PASSWORD=yes
       - MARIADB_DATABASE=mysql_db
-      - MARIADB_ROOT_PASSWORD=password
       - MARIADB_USER=user
       - MARIADB_PASSWORD=password
     volumes:
-      # - ./mysql-data:/var/lib/mysql
-      - ./docker/mysql-init.sql:/docker-entrypoint-initdb.d/mysql-init.sql:ro
+      - ./docker/mysql-init.sql:/docker-entrypoint-startdb.d/mysql-init.sql:ro
       - ./docker/mysql-import:/mysql-import
+    deploy:
+      mode: replicated
+      replicas: 3
+    networks:
+      - app_network
+
+  mongodb:
+    image: docker.io/bitnami/mongodb-sharded:6.0
+    container_name: mongodb
+    restart: always
+    profiles: ['server', 'all']
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb
+      - MONGODB_SHARDING_MODE=mongos
+      - MONGODB_CFG_PRIMARY_HOST=mongodb-cfg
+      - MONGODB_CFG_REPLICA_SET_NAME=cfgreplicaset
+      - MONGODB_REPLICA_SET_KEY=replicasetkey
+      - MONGODB_ROOT_PASSWORD=password
+    networks:
+      - app_network
+
+  mongodb-shard0:
+    image: docker.io/bitnami/mongodb-sharded:6.0
+    container_name: mongodb-shard0
+    restart: always
+    profiles: ['server', 'all']
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb-shard0
+      - MONGODB_SHARDING_MODE=shardsvr
+      - MONGODB_MONGOS_HOST=mongodb
+      - MONGODB_ROOT_PASSWORD=password
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_REPLICA_SET_KEY=replicasetkey
+      - MONGODB_REPLICA_SET_NAME=shard0
+    networks:
+      - app_network
+
+  mongodb-shard1:
+    image: docker.io/bitnami/mongodb-sharded:6.0
+    container_name: mongodb-shard1
+    restart: always
+    profiles: ['server', 'all']
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb-shard1
+      - MONGODB_SHARDING_MODE=shardsvr
+      - MONGODB_MONGOS_HOST=mongodb
+      - MONGODB_ROOT_PASSWORD=password
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_REPLICA_SET_KEY=replicasetkey
+      - MONGODB_REPLICA_SET_NAME=shard1
+    networks:
+      - app_network
+
+  mongodb-shard2:
+    image: docker.io/bitnami/mongodb-sharded:6.0
+    container_name: mongodb-shard2
+    restart: always
+    profiles: ['server', 'all']
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb-shard2
+      - MONGODB_SHARDING_MODE=shardsvr
+      - MONGODB_MONGOS_HOST=mongodb
+      - MONGODB_ROOT_PASSWORD=password
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_REPLICA_SET_KEY=replicasetkey
+      - MONGODB_REPLICA_SET_NAME=shard2
+    networks:
+      - app_network
+
+  mongodb-cfg:
+    image: docker.io/bitnami/mongodb-sharded:6.0
+    container_name: mongodb-cfg
+    restart: always
+    profiles: ['server', 'all']
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb-cfg
+      - MONGODB_SHARDING_MODE=configsvr
+      - MONGODB_ROOT_PASSWORD=password
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_REPLICA_SET_KEY=replicasetkey
+      - MONGODB_REPLICA_SET_NAME=cfgreplicaset
+    networks:
+      - app_network
+
+  mongoimport:
+    build:
+      context: ./docker/mongo-import
+    container_name: mongoimport
+    profiles: ['server', 'all']
+    depends_on:
+      - mongodb
     networks:
       - app_network
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin-mysql
+    container_name: phpmyadmin
     restart: always
+    profiles: ['all']
     environment:
       PMA_HOST: mariadb
       PMA_PORT: 3306
@@ -48,34 +140,11 @@ services:
     networks:
       - app_network
 
-  mongodb:
-    image: mongo
-    container_name: mongodb
-    restart: always
-    volumes:
-      # - ./mongo-data:/data/db
-      - ./docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-    environment:
-      - MONGO_INITDB_DATABASE=mongo_db
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=password
-    command: --quiet
-    networks:
-      - app_network
-
-  mongoimport:
-    build:
-      context: ./docker/mongo-import
-    container_name: mongodb-import
-    depends_on:
-      - mongodb
-    networks:
-      - app_network
-
   mongo-express:
     image: mongo-express
     container_name: mongo-express
     restart: always
+    profiles: ['all']
     ports:
       - 127.0.0.1:8081:8081
     environment:

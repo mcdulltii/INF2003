@@ -43,7 +43,7 @@ module.exports = {
 }
 
 // Create a new mongoose connection
-mongoose.connect('mongodb://user:password@mongodb:27017/mongo_db');
+mongoose.connect('mongodb://root:password@mongodb:27017/mongo_db?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=false');
 
 // API Routings
 var routes = require("./routes/index");
