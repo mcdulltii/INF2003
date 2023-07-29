@@ -363,7 +363,9 @@ router.post("/posts/delete/:post_id", async (req, res) => {
 
 // Route to add a comment to MongoDB
 router.post("/comments/add", async (req, res) => {
-  var comment = new Comment(req.body);
+  var comment = new Comment();
+  comment.post_id = req.body.post_id;
+  comment.comment_message = req.body.comment_message;
   await comment.save();
   res.json(comment);
 });
@@ -414,6 +416,7 @@ router.post("/comments/update/:_id", async (req, res) => {
   var comment = await Comment.findOne({ _id: req.params._id });
 
   // Only update the fields that were passed in
+  comment.post_id = req.body.post_id ?? comment.post_id;
   comment.comment_message = req.body.comment_message ?? comment.comment_message;
 
   await comment.save();
