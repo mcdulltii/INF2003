@@ -9,6 +9,7 @@ const router = express.Router();
 // Models
 var Post = mongoose.model('Post');
 var Comment = mongoose.model('Comment');
+var Subbludit = mongoose.model('Subbludit');
 
 // Default variables
 const page_offset = 10;
@@ -167,6 +168,32 @@ router.post("/subreddit/get", async (req, res) => {
   });
 });
 
+// get subreddit by search term
+router.get("/subreddit/search/:query", async (req, res) => {
+  const { query } = req.params;
+
+  db.getConnection((err, conn) => {
+    if (err) {
+      console.log("Not connected due to error: " + err);
+      res.status(401).json(err);
+    } else {
+      console.log("Connected! Connection id is " + conn.threadId);
+      // Run the query to search for subreddits based on the provided query
+      const searchTerm = `%${query}%`; // Add wildcard to search for partial matches
+      conn.query("SELECT forum_name FROM forums WHERE forum_name LIKE ?", [searchTerm], (err, results) => {
+        if (err) {
+          console.log("Failed to search subreddits: " + err);
+          res.status(401).json(err);
+        } else {
+          // Return the results
+          res.status(200).json({ success: true, subreddits: results });
+        }
+        conn.end();
+      });
+    }
+  });
+});
+
 // Route to add a post to MongoDB
 router.post("/posts/add", async (req, res) => {
   var post = new Post();
@@ -213,10 +240,84 @@ router.get("/posts/:current_page", async (req, res) => {
   });
 });
 
+// posts per subreddit
+router.get("/posts/sub/:current_page/:subreddit", async (req, res) => {
+  const { current_page, subreddit } = req.params;
+
+  // Get number of posts with the specific subreddit
+  const num_posts = await Post.countDocuments({ subreddit });
+
+  // Calculate the number of pages
+  const num_pages = Math.ceil(num_posts / page_offset);
+
+  // Retrieve posts for the specified subreddit, sorted by post_datetime in descending order,
+  // paginated using the current_page and page_offset values
+  const posts = await Post.find({ subreddit })
+    .sort({ post_datetime: -1 })
+    .skip(current_page * page_offset)
+    .limit(page_offset);
+
+  res.json({
+    num_pages: num_pages,
+    posts: posts,
+  });
+});
+
 // Route to get a specific post from MongoDB
 router.get("/posts/get/:post_id", async (req, res) => {
   res.json(await Post.find({ post_id: req.params.post_id }));
 });
+
+router.get("/posts/sorted-by-comments/:current_page", async (req, res) => {
+  try {
+    const currentPage = parseInt(req.params.current_page);
+    const pageOffset = 10; // Assuming a fixed number of posts per page
+
+    // Get the number of pages for comments and posts
+    const numPosts = await Post.countDocuments({});
+    const numPages = Math.ceil(numPosts / pageOffset);
+
+    // Convert the current_page to the number of documents to skip
+    const skipDocuments = (currentPage) * pageOffset;
+
+    // Get all posts sorted by the number of comments using the aggregate framework
+    const sortedPosts = await Post.aggregate([
+      {
+        $lookup: {
+          from: "comments",
+          localField: "post_id", // Use "post_id" instead of "_id"
+          foreignField: "post_id",
+          as: "comments",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          post_id: 1,
+          post_datetime: 1,
+          post_title: 1,
+          subreddit: 1,
+          post_url: 1,
+          flair_text: 1,
+          post_content: 1,
+          num_comments: { $size: "$comments" }, // Calculate the number of comments as the size of the comments array
+        },
+      },
+      { $sort: { num_comments: -1 } }, // Sort by 'num_comments' in descending order (-1)
+      { $skip: skipDocuments }, // Skip the appropriate number of posts based on the current page
+      { $limit: pageOffset }, // Limit the number of posts per page
+    ]);
+
+    res.json({
+      num_pages: numPages,
+      posts: sortedPosts,
+    });
+  } catch (error) {
+    console.error("Error retrieving sorted posts by comments:", error);
+    res.status(500).json({ error: "Failed to retrieve sorted posts by comments" });
+  }
+});
+
 
 // Route to search for a post from MongoDB
 router.get("/posts/search/:search_term", async (req, res) => {
@@ -325,6 +426,13 @@ router.post("/comments/delete/:_id", async (req, res) => {
   var comment = await Comment.findOneAndRemove({ _id: req.params._id });
   res.json(comment);
 });
+
+// // Route to search for a subreddit from MongoDB
+// router.get("/subbludit/search/:search_term", async (req, res) => {
+//   res.json(await Subbludit.find({ name: { $regex: req.params.search_term, $options: "i" } }));
+// });
+
+
 
 router.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));

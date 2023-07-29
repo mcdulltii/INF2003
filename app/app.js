@@ -13,6 +13,7 @@ const morgan = require('morgan');
 // Models
 require("./models/Post");
 require("./models/Comment");
+require("./models/Subbludit");
 
 // ExpressJS App
 const app = express();

@@ -10,6 +10,7 @@ import Register from "@/pages/Register.vue"
 import IndivPost from "@/pages/Posts/IndivPostCard.vue";
 import CreatePost from "@/pages/CreatePost.vue";
 import EditPost from "@/pages/EditPost.vue";
+import Subbludit from "@/pages/Posts/Subreddit.vue";
 
 // Admin pages
 import Dashboard from "@/pages/Dashboard.vue";
@@ -38,6 +39,11 @@ const routes = [
         path: "/createpost",
         name: "createpost", 
         component: CreatePost,
+      },
+      {
+        path: "/subbludit/:sub",
+        name: "subbludit", 
+        component: Subbludit,
       },
       {
         path: "/userprofile",

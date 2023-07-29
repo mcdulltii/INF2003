@@ -2,7 +2,7 @@
   <div style="width: 50%; margin: auto">
     <card class="card" title="Login" style="align-items: center; margin-top: 20%; padding: auto">
       <div>
-        <form @submit.prevent="login">
+        <form @submit.prevent>
           <div class="row">
             <div class="col-md-20">
               <fg-input type="text" label="Username" placeholder="Username" v-model="username" required>
@@ -17,7 +17,7 @@
             </div>
           </div>
           <div class="text-center">
-            <p-button type="info" round>
+            <p-button type="info" round @click.native.prevent="login">
               Login
             </p-button>
             <p style="padding-top: 20px"></p>

@@ -9,13 +9,13 @@
             
           />
           <router-link :to="{ path: '/createpost' }">
-            <textarea style="width: 150%">Create Post</textarea>
+            <fg-input style="width: 200%" placeholder="Create Post"></fg-input>
           </router-link>
           </div>
         </card>
         <router-link v-for="item in items" :to="{ path: '/indivpost/' + item.post_id }" :key="item.post_id">
         <Post-Card v-bind="item"></Post-Card>
-        </router-link>
+        </router-link>       
         <div class="pagination-wrapper">
             <paginate :page-count="pageCount" :click-handler="onPaginationClick" :prev-text="'Prev'" :next-text="'Next'"
                 :container-class="'pagination'">
@@ -36,18 +36,22 @@
         items: [],
         pageCount: 20,
         current_page: 0,
-        searchResults: {
-          type: Array,
-          required: true,
-        },
+        isPopsSorted: false,
       }
     },
     beforeDestroy() {
       eventBus.$off('search', this.findPost);
+      eventBus.$off('posts-sorted-by-comments', this.sortPostsByPopularity(this.current_page));
     },
     mounted () {
       eventBus.$on('search', this.findPost);
-      this.reloadPosts(this.current_page);
+      eventBus.$on('posts-sorted-by-comments', () => { this.sortPostsByPopularity(this.current_page); });
+      if (this.isPopsSorted == false) {
+        this.reloadPosts(this.current_page);
+      }
+      else {
+        this.sortPostsByPopularity(this.current_page);
+      }
     },
     methods: {
       onPaginationClick: function (pageNum) {
@@ -98,7 +102,24 @@
             console.error('Error retrieving searched posts:', error);
             // Handle the error here if needed
           });
-      }
+      },
+
+      sortPostsByPopularity: function (page) {
+        this.isPostsSorted = true;
+        fetch('/posts/sorted-by-comments/' + page)
+          .then(response => response.json())
+          .then(data => {
+            // Emit a custom event to the parent component (home page)
+            console.log(data);
+            this.items = data.posts;
+            this.items.forEach(item => delete item.__v);
+            this.pageCount = data.num_pages;
+          })
+          .catch((error) => {
+            console.error('Error retrieving sorted posts:', error);
+            // Handle the error here if needed
+          });
+      },
   },
 
   components: {

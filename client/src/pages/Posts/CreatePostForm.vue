@@ -4,11 +4,15 @@
       <form @submit.prevent>
         <div class="row">
           <div class="col-md-4">
-            <select  class="dropdown" v-model="post.subreddit" >
-              <option selected disabled>Choose a subreddit</option>
-              <option v-for="code in availiableSubReddits" v-bind:value="code">{{ code }}</option>
-         </select>
-       
+            <!-- <select  class="dropdown" v-model="post.subreddit" >
+              <option class="dropdown-item" selected disabled>Choose a subreddit</option>
+              <option class="dropdown-item" v-for="code in availiableSubReddits" v-bind:value="code">{{ code }}</option>
+         </select> -->
+         <label for="dropdown_sub">Subbludit</label>
+          <select id="dropdown_sub" label="Subbludit" class="dropdown form-control" v-model="post.subreddit" >
+              <option class="dropdown-item" selected disabled>Choose a subbludit</option>
+              <option class="dropdown-item" v-for="code in availiableSubReddits" v-bind:value="code">{{ code }}</option>
+          </select>
           </div>
           <div class="col-md-8">
             <fg-input type="text" label="Title" placeholder="Give your post an interesting title"

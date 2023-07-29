@@ -2,19 +2,20 @@
   <nav class="navbar navbar-expand-lg navbar-light" style="position: fixed; top: 0; width: 100%; z-index: 999">
     <div class="container-fluid">
       <a class="navbar-brand" href="/"> BLUDIT </a>
-      <drop-down class="navbar-brand" title="Home" title-classes="nav-link" icon="ti-home">
-        <input type="text" id="filterBar" @click.stop v-model="filterQuery" placeholder="Filter...">
-        <a class="dropdown-item subreddit-option" href="#">r/funny</a>
-        <a class="dropdown-item subreddit-option" href="#">r/AskReddit</a>
-        <a class="dropdown-item subreddit-option" href="#">r/science</a>
-        <a class="dropdown-item subreddit-option" href="#">r/gaming</a>
+      <drop-down v-if="$route.path === '/'"
+        class="navbar-brand"
+        title="Home"
+        title-classes="nav-link"
+        icon="ti-home"
+      >
+        <input type="text" class="form-control" id="filterBar" v-on:keyup="updateFilteredSubbludits" v-model="filterQuery" @click.stop placeholder="Filter...">
+        <!-- relevant to search/filter functions, click event to trigger filter is here -->
+        <a class="dropdown-item" style="padding: 10px 45px 10px 15px; margin-bottom: 5px;" href="#"><span @click="getPostsSortedByComments" class="ti-stats-up"> Trending </span></a>
+        <!-- Display the filteredSubreddits based on user input -->
+        <a v-for="subbludit in filteredSubbludits" :key="subbludit" class="dropdown-item subreddit-option" href="#">
+          <router-link :to="{ path: '/subbludit/' + subbludit.name }"> b/ {{ subbludit.name }} </router-link>
+        </a>
       </drop-down>
-      <button class="navbar-toggler navbar-burger" type="button" @click="toggleSidebar"
-        :aria-expanded="$sidebar.showSidebar" aria-label="Toggle navigation">
-        <span class="navbar-toggler-bar"></span>
-        <span class="navbar-toggler-bar"></span>
-        <span class="navbar-toggler-bar"></span>
-      </button>
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav ml-auto">
           <!-- <li class="nav-item">
@@ -67,6 +68,12 @@ export default {
       activeNotifications: false,
       user_name: localStorage.getItem('username'),
       filterQuery: "",
+      // default options
+      filteredSubbludits: [
+        { _id: '1', name: 'art' },
+        { _id: '2', name: 'artificial' },
+        { _id: '3', name: 'datascience' },
+      ],
       searchQuery: "",
       popularSubreddits: [
         "r/funny",
@@ -100,6 +107,10 @@ export default {
       // Redirect the user to the login page or any other desired page
       this.$router.push('/');
     },
+    getPostsSortedByComments() {
+      // alert("function is called");
+      eventBus.$emit('posts-sorted-by-comments');
+    },
     getPostCount() {
       var get_user_id = localStorage.getItem('user_id');
       console.log(get_user_id)
@@ -125,6 +136,22 @@ export default {
         .catch(error => {
           console.log(error);
         });
+    },
+    async updateFilteredSubbludits() {
+      const query = this.filterQuery.toLowerCase();
+
+      // Make a request to your API endpoint for searching subreddits
+      try {
+        const response = await axios.get('/subreddit/search/' + query);
+        const apiResponse = response.data;
+        const subredditsFromAPI = apiResponse.success ? apiResponse.subreddits : [];
+
+        // Update the filteredSubbludits with the retrieved subreddits
+        this.filteredSubbludits = subredditsFromAPI.map(subbludit => ({ _id: subbludit.forum_name, name: subbludit.forum_name }));
+      } catch (error) {
+        console.error('Error fetching subreddits:', error);
+        this.filteredSubbludits = []; // Clear the list if an error occurs
+      }
     },
     getPostsFromSearch() {
       eventBus.$emit('search', this.searchQuery);
