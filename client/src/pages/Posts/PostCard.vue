@@ -10,7 +10,6 @@
           b/{{ subreddit }}
           <a href="#">
             <small>&#2022 Posted by: @{{user_name}}</small>
-            <small>&#2022 Posted by: @{{user_name}}</small>
           </a>
           <small>&nbsp {{ post_datetime }}</small>
         </h6>
@@ -34,16 +33,6 @@
             Comments
             <br />
             <small>{{ total_comments }}</small>
-          </h5>
-          <h5>
-            Share
-            <br />
-            <small> -></small>
-          </h5>
-          <h5>
-            Save
-            <br />
-            <small>V</small>
           </h5>
       </div>
     </div>
