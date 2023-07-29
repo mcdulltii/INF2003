@@ -29,7 +29,6 @@
   import '@/assets/css/pagination.css';
   import axios from 'axios';
   import PostCard from "./Posts/PostCard.vue";
-  // relevant to search/filter functions, pls import this
   import { eventBus } from '../services/eventBus';
   export default {
     data () {
@@ -38,19 +37,14 @@
         pageCount: 20,
         current_page: 0,
         isPopsSorted: false,
-        sortedPosts: {
-          type: Array,
-          required: true,
-        },
       }
     },
-    // relevant to search/filter functions
     beforeDestroy() {
-    // this.$parent.$off('sorted-posts-updated', this.onSortedPostsUpdated);
-    eventBus.$off('posts-sorted-by-comments', this.sortPostsByPopularity(this.current_page));
+      eventBus.$off('search', this.findPost);
+      eventBus.$off('posts-sorted-by-comments', this.sortPostsByPopularity(this.current_page));
     },
     mounted () {
-      // relevant to search/filter functions
+      eventBus.$on('search', this.findPost);
       eventBus.$on('posts-sorted-by-comments', () => { this.sortPostsByPopularity(this.current_page); });
       if (this.isPopsSorted == false) {
         this.reloadPosts(this.current_page);
@@ -61,47 +55,76 @@
     },
     methods: {
       onPaginationClick: function (pageNum) {
-            pageNum = pageNum - 1;
-            console.log(pageNum);
-            this.reloadPosts(pageNum);
-            
-            this.current_id = null;
-            this.current_page = pageNum;
+        pageNum = pageNum - 1;
+        console.log(pageNum);
+        this.reloadPosts(pageNum);
+        this.current_id = null;
+        this.current_page = pageNum;
+      },
 
-        },
-        reloadPosts: function (page) {
-            fetch('/posts/' + page)
-                .then(response => response.json())
-                .then(data => {
-                    this.items = data.posts;
-                    // remove _v from tableData
-                    this.items.forEach(item => delete item.__v);
-                    this.pageCount = data.num_pages;
-                })
-                .catch(error => {
-                    console.log(error);
-                });
-        },
-        // relevant to search/filter functions
-    sortPostsByPopularity: function (page) {
-      this.isPostsSorted = true;
-      fetch('/posts/sorted-by-comments/' + page)
-        .then(response => response.json())
-        .then(data => {
-          // Emit a custom event to the parent component (home page)
-          console.log(data);
-          this.items = data.posts;
-          this.items.forEach(item => delete item.__v);
-          this.pageCount = data.num_pages;
-        })
-        .catch((error) => {
-          console.error('Error retrieving sorted posts:', error);
-        });
-    }
-    },
-    components: {
-      PostCard,
-      Paginate
-    },
-  };
-  </script>
+      reloadPosts: function (page) {
+        fetch('/posts/' + page)
+          .then(response => response.json())
+          .then(data => {
+            this.items = data.posts;
+            // remove _v from tableData
+            this.items.forEach(item => delete item.__v);
+            this.pageCount = data.num_pages;
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      },
+
+      findPost: function (page) {
+        fetch('/posts/search/' + page)
+          .then((response) => {
+            // Emit a custom event to the parent component (home page)
+            this.items = response.data;
+            console.log(this.searchQuery);
+            console.log(response.data);
+          })
+          .catch((error) => {
+            console.error('Error retrieving searched posts:', error);
+            // Handle the error here if needed
+          });
+      },
+
+      findPost: function (searchQuery) {
+        fetch('/posts/search/' + searchQuery)
+          .then((response) => response.json())
+          .then((data) => {
+            this.items = data;
+            this.items.forEach(item => delete item.__v);
+            console.log(this.items);
+          })
+          .catch((error) => {
+            console.error('Error retrieving searched posts:', error);
+            // Handle the error here if needed
+          });
+      },
+
+      sortPostsByPopularity: function (page) {
+        this.isPostsSorted = true;
+        fetch('/posts/sorted-by-comments/' + page)
+          .then(response => response.json())
+          .then(data => {
+            // Emit a custom event to the parent component (home page)
+            console.log(data);
+            this.items = data.posts;
+            this.items.forEach(item => delete item.__v);
+            this.pageCount = data.num_pages;
+          })
+          .catch((error) => {
+            console.error('Error retrieving sorted posts:', error);
+            // Handle the error here if needed
+          });
+      },
+  },
+
+  components: {
+    PostCard,
+    Paginate
+  },
+};
+</script>
