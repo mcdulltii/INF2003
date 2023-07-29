@@ -17,4 +17,6 @@ SIT INF2003 (Database Systems) Assignment
 
     `docker-compose logs mongoimport`
 
+    ![mongoimport](./docker/mongo-import.png)
+
 3. Access web server at `http://<domain>:8000`
