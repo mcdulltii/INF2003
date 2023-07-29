@@ -8,7 +8,8 @@
               <option class="dropdown-item" selected disabled>Choose a subreddit</option>
               <option class="dropdown-item" v-for="code in availiableSubReddits" v-bind:value="code">{{ code }}</option>
          </select> -->
-          <select label="Subbludit" class="dropdown form-control" v-model="post.subreddit" >
+         <label for="dropdown_sub">Subbludit</label>
+          <select id="dropdown_sub" label="Subbludit" class="dropdown form-control" v-model="post.subreddit" >
               <option class="dropdown-item" selected disabled>Choose a subbludit</option>
               <option class="dropdown-item" v-for="code in availiableSubReddits" v-bind:value="code">{{ code }}</option>
           </select>
