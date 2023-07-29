@@ -44,16 +44,6 @@
             <br />
             <small>{{ total_comments }}</small>
           </h5>
-          <h5>
-            Share
-            <br />
-            <small> -></small>
-          </h5>
-          <h5>
-            Save
-            <br />
-            <small>V</small>
-          </h5>
       </div>
     </div>
   </card>
@@ -61,9 +51,9 @@
   <card class="card-user" style="display: flex; flex-direction: column;">
     <small> Comment as u/helloUser1 </small>
     <div style="flex: 1;">
-      <textarea v-model="newComment" rows="2" placeholder="What are your thoughts?"></textarea>
+      <fg-input type="text" v-model="newComment" rows="2" placeholder="What are your thoughts?"></fg-input>
       <div class="text-right">
-      <button style="right: 20px; bottom: 18px; position: absolute" @click="saveChanges">Post</button>
+      <p-button type="info" style="right: 18px; bottom: 30px; position: absolute" @click="saveChanges">Post</p-button>
     </div>
     </div>
     <hr />

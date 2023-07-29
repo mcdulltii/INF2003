@@ -32,8 +32,8 @@
     "sass-loader": "10.2.0",
     "vue-template-compiler": "2.7.14"
   },
-  "description": "A sample admin dashboard based on paper dashboard UI template",
-  "author": "cristian.jora <joracristi@gmail.com>",
+  "description": "",
+  "author": "",
   "engines": {
     "node": ">= 8.1.4",
     "npm": ">= 5.0.0"

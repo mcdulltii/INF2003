@@ -16,10 +16,6 @@ import Subbludit from "@/pages/Posts/Subreddit.vue";
 import Dashboard from "@/pages/Dashboard.vue";
 import UserProfile from "@/pages/UserPage.vue";
 import UserSettings from "@/pages/UserProfile.vue";
-import Notifications from "@/pages/Notifications.vue";
-import Icons from "@/pages/Icons.vue";
-import Typography from "@/pages/Typography.vue";
-import TableList from "@/pages/TableList.vue";
 import PostsAdmin from '@/pages/MongoAdmin/PostsAdmin.vue'
 import CommentsAdmin from '@/pages/MongoAdmin/CommentsAdmin.vue'
 
@@ -97,33 +93,13 @@ const routes = [
     children: [
       {
         path: "/admin",
-        name: "dashboard",
-        component: Dashboard,
+        name: "posts-admin",
+        component: PostsAdmin,
       },
       {
         path: "/stats",
         name: "stats",
         component: UserProfile,
-      },
-      {
-        path: "/notifications",
-        name: "notifications",
-        component: Notifications,
-      },
-      {
-        path: "/icons",
-        name: "icons",
-        component: Icons,
-      },
-      {
-        path: "/typography",
-        name: "typography",
-        component: Typography,
-      },
-      {
-        path: "/table-list",
-        name: "table-list",
-        component: TableList,
       },
       {
         path: "/posts-admin",

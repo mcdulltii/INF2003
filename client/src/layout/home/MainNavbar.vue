@@ -38,9 +38,9 @@
               <p>Login/Register</p>
             </a>
           </li>
-          <li class="nav-item" v-show="loggedIn">
+          <li class="nav-item" v-if="loggedIn !== null">
             <drop-down v-if="true" class="nav-item" title="User Details" title-classes="nav-link" icon="ti-face-smile">
-          <li class="nav-item" v-show="loggedIn">
+          <li class="nav-item" v-if="loggedIn !== null">
             <a v-if="true" class="nav-link" @click="logout">
               <i class="ti-face-smile"></i>
               <p>Logout</p>
