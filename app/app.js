@@ -13,7 +13,6 @@ const morgan = require('morgan');
 // Models
 require("./models/Post");
 require("./models/Comment");
-require("./models/Subbludit");
 
 // ExpressJS App
 const app = express();
@@ -39,7 +38,7 @@ const pool = mariadb.createPool({
 module.exports = {
   getConnection: (callback) => {
     return pool.getConnection(callback);
-  } 
+  }
 }
 
 // Create a new mongoose connection

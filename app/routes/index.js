@@ -9,7 +9,6 @@ const router = express.Router();
 // Models
 var Post = mongoose.model('Post');
 var Comment = mongoose.model('Comment');
-var Subbludit = mongoose.model('Subbludit');
 
 // Default variables
 const page_offset = 10;
@@ -426,13 +425,6 @@ router.post("/comments/delete/:_id", async (req, res) => {
   var comment = await Comment.findOneAndRemove({ _id: req.params._id });
   res.json(comment);
 });
-
-// // Route to search for a subreddit from MongoDB
-// router.get("/subbludit/search/:search_term", async (req, res) => {
-//   res.json(await Subbludit.find({ name: { $regex: req.params.search_term, $options: "i" } }));
-// });
-
-
 
 router.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
